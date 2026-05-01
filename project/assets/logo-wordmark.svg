@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 64" role="img" aria-label="The Voice Lab">
+  <g transform="translate(8, 16)">
+    <circle cx="16" cy="16" r="15" fill="none" stroke="#0E1411" stroke-opacity="0.16" stroke-width="1"></circle>
+    <circle cx="16" cy="16" r="5" fill="#0033FF"></circle>
+  </g>
+  <text x="56" y="40" font-family="Geist, sans-serif" font-size="22" font-weight="600" fill="#0E1411" letter-spacing="0.22em">THE</text>
+  <text x="110" y="40" font-family="Geist, sans-serif" font-size="22" font-weight="400" fill="#0033FF" letter-spacing="0.22em">·</text>
+  <text x="128" y="40" font-family="Geist, sans-serif" font-size="22" font-weight="600" fill="#0E1411" letter-spacing="0.22em">VOICE</text>
+  <text x="216" y="40" font-family="Geist, sans-serif" font-size="22" font-weight="400" fill="#0033FF" letter-spacing="0.22em">·</text>
+  <text x="234" y="40" font-family="Geist, sans-serif" font-size="22" font-weight="600" fill="#0E1411" letter-spacing="0.22em">LAB</text>
+</svg>
