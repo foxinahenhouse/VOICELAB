@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Voice Lab for Leaders — Print</title>
+  <link rel="icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles/colors_and_type.css" />
+  <style>
+    html, body { background: var(--vl-paper); }
+    @keyframes vl-fade-in { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes vl-rise   { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+    @keyframes vl-caret  { 0%, 50% { opacity: 1 } 51%, 100% { opacity: 0 } }
+    section, footer { animation: vl-fade-in 600ms var(--vl-ease) both; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--vl-voice-green); outline-offset: 3px; border-radius: 2px; }
+    input::placeholder, textarea::placeholder { color: var(--vl-mute); }
+    input:focus, textarea:focus { border-color: var(--vl-voice-green) !important; }
+
+    /* ---------- PRINT STYLES ---------- */
+    @page {
+      size: A4 portrait;
+      margin: 1cm;
+    }
+
+    @media print {
+      html, body {
+        background: var(--vl-paper) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Force colors/backgrounds in print */
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        animation: none !important;
+        transition: none !important;
+      }
+
+      /* Each top-level section starts on a new page */
+      section {
+        break-before: page;
+        page-break-before: always;
+        break-inside: avoid-page;
+      }
+      section:first-of-type {
+        break-before: auto;
+        page-break-before: auto;
+      }
+
+      /* Avoid splitting key blocks */
+      figure, h1, h2, h3, h4 {
+        break-inside: avoid;
+      }
+
+      /* Hide interactive-only chrome */
+      .vl-tweaks-panel,
+      [data-tweaks-toggle],
+      button[aria-label="Play"],
+      button[aria-label="Pause"],
+      button[aria-label="Play comparison"],
+      button[aria-label="Pause comparison"] {
+        /* keep visible — they're part of the visual design — but disable */
+        pointer-events: none;
+      }
+
+      /* Ensure text doesn't get cut */
+      p, h1, h2, h3, h4, h5, h6, blockquote, figcaption {
+        orphans: 3;
+        widows: 3;
+      }
+
+      /* Constrain very large hero type so it doesn't overflow A4 */
+      h1, h2 {
+        max-width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+
+  <!-- Auto-print once everything is ready -->
+  <script type="text/babel" data-presets="env,react">
+    (async () => {
+      // Wait for fonts
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (e) {}
+      }
+      // Wait for React render — poll until #root has children
+      const root = document.getElementById('root');
+      const start = Date.now();
+      while ((!root || root.childElementCount === 0) && Date.now() - start < 8000) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+      // Wait for all images to load
+      const imgs = Array.from(document.images || []);
+      await Promise.all(imgs.map(img =>
+        img.complete ? Promise.resolve() :
+          new Promise(res => { img.addEventListener('load', res); img.addEventListener('error', res); })
+      ));
+      // Final settle
+      await new Promise(r => setTimeout(r, 800));
+      window.print();
+    })();
+  </script>
+</body>
+</html>
