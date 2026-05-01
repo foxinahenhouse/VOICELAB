@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---------- COLOR ---------- */
+  --vl-paper: #F6F2EA;
+  --vl-bone: #FAFAF7;
+  --vl-ink: #0E1411;
+
+  --vl-voice-green: #0033FF;
+  --vl-voice-green-deep: #001A99;
+  --vl-voice-green-wash: #DCE4FF;
+
+  --vl-graphite: #5A5F5A;
+  --vl-mute: #A8A89F;
+  --vl-hairline: rgba(31, 37, 32, 0.08);
+  --vl-hairline-strong: rgba(31, 37, 32, 0.16);
+
+  --vl-fg-1: var(--vl-ink);
+  --vl-fg-2: var(--vl-graphite);
+  --vl-fg-3: var(--vl-mute);
+  --vl-bg-1: var(--vl-paper);
+  --vl-bg-2: var(--vl-bone);
+  --vl-accent: var(--vl-voice-green);
+  --vl-accent-pressed: var(--vl-voice-green-deep);
+  --vl-border: var(--vl-hairline);
+  --vl-border-accent: var(--vl-voice-green);
+
+  /* ---------- TYPE ---------- */
+  --vl-font-serif: 'Instrument Serif', Georgia, serif;
+  --vl-font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --vl-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---------- LAYOUT ---------- */
+  --vl-content-max: 1280px;
+  --vl-prose-max: 65ch;
+  --vl-margin-x-desktop: 5rem;
+
+  /* ---------- SHADOWS ---------- */
+  --vl-shadow-card:
+    0 1px 2px rgba(14, 20, 17, 0.04),
+    0 8px 24px rgba(14, 20, 17, 0.06);
+  --vl-shadow-floating:
+    0 12px 40px rgba(14, 20, 17, 0.08);
+
+  /* ---------- MOTION ---------- */
+  --vl-ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  background: var(--vl-bg-1);
+  color: var(--vl-fg-1);
+  font-family: var(--vl-font-sans);
+}
+
+::selection {
+  background: var(--vl-voice-green-wash);
+  color: var(--vl-ink);
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--vl-voice-green);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--vl-mute);
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--vl-voice-green) !important;
+}
+
+@keyframes vl-fade-in {
+  from { opacity: 0 }
+  to   { opacity: 1 }
+}
+
+@keyframes vl-rise {
+  from { opacity: 0; transform: translateY(12px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes vl-caret {
+  0%, 50%   { opacity: 1 }
+  51%, 100% { opacity: 0 }
+}
+
+section, footer {
+  animation: vl-fade-in 600ms var(--vl-ease) both;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --vl-margin-x-desktop: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
