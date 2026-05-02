@@ -1,0 +1,48 @@
+// ---------- STAKES ----------
+
+const Stakes = () => (
+  <section id="stakes" style={{
+    padding: '128px var(--vl-margin-x-desktop)',
+    background: 'var(--vl-ink)',
+    color: 'var(--vl-paper)'
+  }}>
+    <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
+      <Label color="green" style={{ marginBottom: 32 }}>What's at stake</Label>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 96, alignItems: 'start' }}>
+        <h2 style={{
+          fontFamily: 'var(--vl-font-serif)', fontWeight: 400,
+          fontSize: 'clamp(36px, 4.4vw, 60px)', lineHeight: 1.05, letterSpacing: '-0.012em',
+          margin: 0, maxWidth: '18ch', textWrap: 'balance', color: 'var(--vl-paper)'
+        }}>
+          Hedge funds now trade on the way a CEO <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>sounds</em>.
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingTop: 6 }}>
+          <p style={{
+            fontFamily: 'var(--vl-font-serif)', fontWeight: 400,
+            fontSize: 'clamp(22px, 2vw, 28px)', lineHeight: 1.3, letterSpacing: '-0.005em',
+            color: 'var(--vl-paper)', margin: 0, maxWidth: '34ch'
+          }}>
+            Analysts time the algorithm to vocal stress on earnings calls — not <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>what's said</em>, <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>how it's said</em>.
+          </p>
+
+          <div style={{ marginTop: 4, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.18)' }}>
+            <p style={{
+              fontFamily: 'var(--vl-font-serif)', fontWeight: 400,
+              fontSize: 'clamp(20px, 1.8vw, 24px)', lineHeight: 1.35,
+              color: 'var(--vl-paper)', margin: 0, maxWidth: '40ch'
+            }}>
+              The market has decided delivery is information.
+            </p>
+            <p style={{
+              fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400,
+              fontSize: 'clamp(20px, 1.8vw, 24px)', lineHeight: 1.35,
+              color: 'var(--vl-voice-green)', margin: '8px 0 0', maxWidth: '40ch'
+            }}>
+              Most leaders haven't.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+)
