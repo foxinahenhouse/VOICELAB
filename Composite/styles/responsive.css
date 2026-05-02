@@ -1,0 +1,259 @@
+/* ============================================================
+   THE VOICE LAB — RESPONSIVE OVERRIDES
+   Target inline styles via attribute selectors. Mobile-first
+   adjustments at <= 900px (tablet) and <= 640px (phone).
+   ============================================================ */
+
+/* ---------- TABLET (<= 900px) ---------- */
+@media (max-width: 900px) {
+  :root {
+    --vl-margin-x-desktop: 2rem;  /* 32 — tighten section gutters */
+  }
+
+  /* Stack the major two-column grids */
+  div[style*="gridTemplateColumns: '1.05fr 0.95fr'"],
+  div[style*="grid-template-columns: 1.05fr 0.95fr"],
+  div[style*="gridTemplateColumns: '1.1fr 0.9fr'"],
+  div[style*="grid-template-columns: 1.1fr 0.9fr"],
+  div[style*="gridTemplateColumns: '0.9fr 1.1fr'"],
+  div[style*="grid-template-columns: 0.9fr 1.1fr"],
+  div[style*="gridTemplateColumns: '1fr 1fr'"],
+  div[style*="grid-template-columns: 1fr 1fr"],
+  div[style*="gridTemplateColumns: '260px 1fr'"],
+  div[style*="grid-template-columns: 260px 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  /* 4-up card grids → 2-up */
+  div[style*="gridTemplateColumns: 'repeat(4, 1fr)'"],
+  div[style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* 3-up stat strips → 1 col */
+  div[style*="gridTemplateColumns: 'repeat(3, 1fr)'"],
+  div[style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* ---------- PHONE (<= 640px) ---------- */
+@media (max-width: 640px) {
+  :root {
+    --vl-margin-x-desktop: 1.25rem;  /* 20px — phone gutter */
+    --vl-content-max: 100%;
+  }
+
+  html { font-size: 15px; }
+
+  /* ---------- SECTION RHYTHM ---------- */
+  /* Compress the 128px section padding everywhere */
+  section[id="problem"],
+  section[id="sprint"],
+  section[id="testimonials"],
+  section[id="who"],
+  section[id="about"],
+  section[id="stakes"] {
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
+  }
+  /* Hero + closing CTA */
+  section[id="top"] { padding-top: 32px !important; padding-bottom: 48px !important; }
+
+  /* ---------- NAV ---------- */
+  /* Hide inline nav links on phone — keep wordmark + CTA */
+  nav a[href^="#problem"],
+  nav a[href^="#sprint"],
+  nav a[href^="#about"] {
+    display: none !important;
+  }
+  nav > div {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    gap: 12px !important;
+  }
+  /* Smaller wordmark spacing */
+  nav span[style*="letterSpacing: \"0.22em\""],
+  nav span[style*="letter-spacing: 0.22em"] {
+    font-size: 11px !important;
+    letter-spacing: 0.16em !important;
+  }
+  /* Compact primary CTA in nav */
+  nav button {
+    padding: 9px 14px !important;
+    font-size: 12px !important;
+  }
+
+  /* ---------- STACK EVERYTHING TWO-COL ---------- */
+  div[style*="gridTemplateColumns: '1.05fr 0.95fr'"],
+  div[style*="grid-template-columns: 1.05fr 0.95fr"],
+  div[style*="gridTemplateColumns: '1.1fr 0.9fr'"],
+  div[style*="grid-template-columns: 1.1fr 0.9fr"],
+  div[style*="gridTemplateColumns: '0.9fr 1.1fr'"],
+  div[style*="grid-template-columns: 0.9fr 1.1fr"],
+  div[style*="gridTemplateColumns: '1fr 1fr'"],
+  div[style*="grid-template-columns: 1fr 1fr"],
+  div[style*="gridTemplateColumns: '260px 1fr'"],
+  div[style*="grid-template-columns: 260px 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* 4-up card grids → 1 col */
+  div[style*="gridTemplateColumns: 'repeat(4, 1fr)'"],
+  div[style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* 3-up → 1 col */
+  div[style*="gridTemplateColumns: 'repeat(3, 1fr)'"],
+  div[style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* "auto 1fr" label rows — keep label inline, allow wrap */
+  div[style*="gridTemplateColumns: 'auto 1fr'"],
+  div[style*="grid-template-columns: auto 1fr"] {
+    column-gap: 14px !important;
+  }
+
+  /* "1fr auto 1fr" console / meta bars — stack to two rows */
+  div[style*="gridTemplateColumns: '1fr auto 1fr'"],
+  div[style*="grid-template-columns: 1fr auto 1fr"] {
+    grid-template-columns: 1fr !important;
+    text-align: left !important;
+    gap: 8px !important;
+  }
+  /* re-align children that were pushed right */
+  div[style*="gridTemplateColumns: '1fr auto 1fr'"] > *,
+  div[style*="grid-template-columns: 1fr auto 1fr"] > * {
+    text-align: left !important;
+    justify-self: start !important;
+  }
+
+  /* "1fr auto" CTA rows */
+  div[style*="gridTemplateColumns: '1fr auto'"],
+  div[style*="grid-template-columns: 1fr auto"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* "88px 1fr" / "48px 1fr" tag-body rows → stack tag above body */
+  div[style*="gridTemplateColumns: '88px 1fr'"],
+  div[style*="grid-template-columns: 88px 1fr"],
+  li[style*="gridTemplateColumns: '88px 1fr'"],
+  li[style*="grid-template-columns: 88px 1fr"],
+  li[style*="gridTemplateColumns: '48px 1fr'"],
+  li[style*="grid-template-columns: 48px 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+
+  /* ---------- TYPOGRAPHY: trim oversize headings ---------- */
+  h1, h2, h3 {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  /* Hero H1 cap */
+  section[id="top"] h1 {
+    font-size: clamp(40px, 11vw, 56px) !important;
+    line-height: 1.02 !important;
+  }
+  /* Section H2 caps */
+  section h2 {
+    font-size: clamp(30px, 8vw, 44px) !important;
+    line-height: 1.06 !important;
+  }
+  /* Pull-quote / sub-heading p that uses clamp(28px, …) */
+  p[style*="clamp(28px"], p[style*="clamp(32px"], p[style*="clamp(24px"], p[style*="clamp(22px"] {
+    font-size: clamp(20px, 5.4vw, 26px) !important;
+    line-height: 1.25 !important;
+  }
+  /* Body paragraphs cap */
+  p {
+    max-width: 100% !important;
+  }
+
+  /* ---------- HERO CONSOLE (right column) ---------- */
+  /* Reduce min-height + padding so the voiceprint isn't huge on phone */
+  div[style*="minHeight: 380"],
+  div[style*="min-height: 380"] {
+    min-height: 0 !important;
+    padding: 14px 16px 18px !important;
+  }
+
+  /* ---------- TESTIMONIAL / WHO / ABOUT TWEAKS ---------- */
+  /* Portrait column was 260px fixed — stretch full width but cap */
+  div[style*="gridTemplateColumns: '260px 1fr'"] > div:first-child,
+  div[style*="grid-template-columns: 260px 1fr"] > div:first-child {
+    max-width: 280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Reduce big "marginTop: 96" / "marginTop: 72" on stacked sections */
+  div[style*="marginTop: 96"], div[style*="margin-top: 96"] {
+    margin-top: 40px !important;
+  }
+  div[style*="marginTop: 72"], div[style*="margin-top: 72"] {
+    margin-top: 32px !important;
+  }
+  div[style*="marginBottom: 72"], div[style*="margin-bottom: 72"] {
+    margin-bottom: 32px !important;
+  }
+  div[style*="marginBottom: 56"], div[style*="margin-bottom: 56"] {
+    margin-bottom: 28px !important;
+  }
+  div[style*="paddingBottom: 96"], div[style*="padding-bottom: 96"] {
+    padding-bottom: 40px !important;
+  }
+
+  /* ---------- BUTTONS ---------- */
+  /* Allow wrap on button rows */
+  div[style*="flex-wrap: wrap"], div[style*="flexWrap: 'wrap'"] {
+    gap: 12px !important;
+  }
+  button { max-width: 100%; }
+
+  /* ---------- FOOTER ---------- */
+  footer > div {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* ---------- DIALOG ---------- */
+  div[role="dialog"] > div {
+    padding: 28px 22px 22px !important;
+  }
+
+  /* Long text scenarios with fixed maxWidth in ch — let them breathe */
+  [style*="maxWidth: '14ch'"],
+  [style*="maxWidth: '16ch'"],
+  [style*="maxWidth: '18ch'"],
+  [style*="maxWidth: '24ch'"],
+  [style*="maxWidth: '40ch'"],
+  [style*="maxWidth: '46ch'"],
+  [style*="maxWidth: '52ch'"],
+  [style*="maxWidth: '54ch'"],
+  [style*="maxWidth: '56ch'"],
+  [style*="maxWidth: '58ch'"],
+  [style*="maxWidth: '65ch'"] {
+    max-width: 100% !important;
+  }
+
+  /* Prevent horizontal scroll from any rogue overflow */
+  body { overflow-x: hidden; }
+}
+
+/* ---------- VERY SMALL PHONE (<= 380px) ---------- */
+@media (max-width: 380px) {
+  :root { --vl-margin-x-desktop: 1rem; }
+  section[id="top"] h1 { font-size: 36px !important; }
+  nav button { display: none !important; }
+}

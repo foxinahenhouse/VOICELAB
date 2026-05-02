@@ -1,0 +1,316 @@
+/* ============================================================
+   THE VOICE LAB — DESIGN TOKENS
+   colors, type, spacing, radii, shadows, motion
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---------- COLOR ---------- */
+  /* Primary surfaces */
+  --vl-paper: #F6F2EA;          /* warm cream, default page surface */
+  --vl-bone: #FAFAF7;           /* cooler off-white, card surface on paper */
+  --vl-ink: #0E1411;            /* near-black w/ faint green undertone, primary text */
+
+  /* Brand accent — electric ultramarine, bold */
+  --vl-voice-green: #0033FF;    /* THE accent. CTAs, links, pull-quote borders, waveform */
+  --vl-voice-green-deep: #001A99; /* pressed / visited / focus on dark */
+  --vl-voice-green-wash: #DCE4FF; /* quiet panel tint */
+
+  /* Neutrals */
+  --vl-graphite: #5A5F5A;       /* secondary body, italic challenge lines */
+  --vl-mute: #A8A89F;           /* tertiary, dividers, placeholders */
+  --vl-hairline: rgba(31, 37, 32, 0.08);  /* the one allowed border tone */
+  --vl-hairline-strong: rgba(31, 37, 32, 0.16); /* hover/active border */
+
+  /* Semantic mappings */
+  --vl-fg-1: var(--vl-ink);
+  --vl-fg-2: var(--vl-graphite);
+  --vl-fg-3: var(--vl-mute);
+  --vl-bg-1: var(--vl-paper);
+  --vl-bg-2: var(--vl-bone);
+  --vl-bg-3: var(--vl-voice-green-wash);
+  --vl-accent: var(--vl-voice-green);
+  --vl-accent-pressed: var(--vl-voice-green-deep);
+  --vl-border: var(--vl-hairline);
+  --vl-border-strong: var(--vl-hairline-strong);
+  --vl-border-accent: var(--vl-voice-green);
+
+  /* ---------- TYPE ---------- */
+  --vl-font-display: 'Geist', -apple-system, 'Helvetica Neue', sans-serif;
+  --vl-font-quote: 'Instrument Serif', 'Source Serif Pro', Georgia, serif;
+  --vl-font-serif: var(--vl-font-quote); /* legacy alias — used only for pull quotes */
+  --vl-font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --vl-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Type scale — rem (1rem = 16px assumed) */
+  --vl-fs-display-xl: 5.5rem;   /* 88 — hero H1 */
+  --vl-fs-display-l: 3.75rem;   /* 60 — section openers */
+  --vl-fs-display-m: 2.5rem;    /* 40 — pull quotes, sub-openers */
+  --vl-fs-display-s: 1.75rem;   /* 28 — card titles */
+  --vl-fs-body-l: 1.25rem;      /* 20 — lead paragraphs */
+  --vl-fs-body: 1.0625rem;      /* 17 — default body */
+  --vl-fs-body-s: 0.9375rem;    /* 15 — UI, captions */
+  --vl-fs-label: 0.75rem;       /* 12 — tracked uppercase */
+  --vl-fs-mono: 0.875rem;       /* 14 — numerals, codes */
+
+  /* Line heights */
+  --vl-lh-display: 1.05;
+  --vl-lh-display-tight: 1.02;
+  --vl-lh-heading: 1.15;
+  --vl-lh-body: 1.6;
+  --vl-lh-body-tight: 1.4;
+
+  /* Letter spacing */
+  --vl-ls-display: -0.012em;
+  --vl-ls-body: 0;
+  --vl-ls-label: 0.16em;
+
+  /* Weights */
+  --vl-fw-regular: 400;
+  --vl-fw-medium: 500;
+  --vl-fw-semibold: 600;
+
+  /* ---------- SPACING ---------- */
+  /* 4px base scale */
+  --vl-s-0: 0;
+  --vl-s-1: 0.25rem;   /* 4 */
+  --vl-s-2: 0.5rem;    /* 8 */
+  --vl-s-3: 0.75rem;   /* 12 */
+  --vl-s-4: 1rem;      /* 16 */
+  --vl-s-5: 1.5rem;    /* 24 */
+  --vl-s-6: 2rem;      /* 32 */
+  --vl-s-7: 3rem;      /* 48 */
+  --vl-s-8: 4rem;      /* 64 */
+  --vl-s-9: 6rem;      /* 96 */
+  --vl-s-10: 8rem;     /* 128 — section rhythm */
+  --vl-s-11: 12rem;    /* 192 */
+
+  /* ---------- RADII ---------- */
+  --vl-r-input: 2px;
+  --vl-r-card: 6px;
+  --vl-r-pill: 999px;
+
+  /* ---------- BORDERS ---------- */
+  --vl-bw-hairline: 1px;
+  --vl-bw-active: 1.5px;
+  --vl-bw-quote: 3px;
+
+  /* ---------- SHADOWS ---------- */
+  --vl-shadow-card:
+    0 1px 2px rgba(14, 20, 17, 0.04),
+    0 8px 24px rgba(14, 20, 17, 0.06);
+  --vl-shadow-floating:
+    0 12px 40px rgba(14, 20, 17, 0.08);
+
+  /* ---------- MOTION ---------- */
+  --vl-ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --vl-dur-fast: 180ms;
+  --vl-dur: 400ms;
+  --vl-dur-slow: 700ms;
+  --vl-dur-breath: 6s;          /* the signature waveform cycle */
+
+  /* ---------- LAYOUT ---------- */
+  --vl-content-max: 1280px;
+  --vl-prose-max: 65ch;
+  --vl-display-max: 22ch;
+  --vl-margin-x-desktop: 5rem;  /* 80 */
+  --vl-margin-x-mobile: 1.5rem; /* 24 */
+}
+
+/* ============================================================
+   SEMANTIC ELEMENT STYLES
+   These are reasonable defaults. Components can override.
+   ============================================================ */
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  background: var(--vl-bg-1);
+  color: var(--vl-fg-1);
+  font-family: var(--vl-font-sans);
+  font-size: var(--vl-fs-body);
+  line-height: var(--vl-lh-body);
+  letter-spacing: var(--vl-ls-body);
+}
+
+::selection {
+  background: var(--vl-voice-green-wash);
+  color: var(--vl-ink);
+}
+
+/* Headings — serif display, tight, indented for asymmetry */
+h1, .vl-h1 {
+  font-family: var(--vl-font-serif);
+  font-weight: var(--vl-fw-regular);
+  font-size: var(--vl-fs-display-xl);
+  line-height: var(--vl-lh-display-tight);
+  letter-spacing: var(--vl-ls-display);
+  margin: 0;
+  text-wrap: balance;
+  font-optical-sizing: auto;
+}
+
+h2, .vl-h2 {
+  font-family: var(--vl-font-serif);
+  font-weight: var(--vl-fw-regular);
+  font-size: var(--vl-fs-display-l);
+  line-height: var(--vl-lh-display);
+  letter-spacing: var(--vl-ls-display);
+  margin: 0;
+  text-wrap: balance;
+  font-optical-sizing: auto;
+}
+
+h3, .vl-h3 {
+  font-family: var(--vl-font-serif);
+  font-weight: var(--vl-fw-regular);
+  font-size: var(--vl-fs-display-m);
+  line-height: var(--vl-lh-display);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h4, .vl-h4 {
+  font-family: var(--vl-font-serif);
+  font-weight: var(--vl-fw-medium);
+  font-size: var(--vl-fs-display-s);
+  line-height: var(--vl-lh-heading);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: var(--vl-prose-max);
+}
+
+/* The italic muted "challenge line" beneath hero H1 */
+.vl-challenge {
+  font-family: var(--vl-font-serif);
+  font-style: italic;
+  font-weight: var(--vl-fw-regular);
+  font-size: var(--vl-fs-display-m);
+  line-height: var(--vl-lh-display);
+  color: var(--vl-graphite);
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Tracked uppercase label — positioning line, section labels, footer */
+.vl-label {
+  font-family: var(--vl-font-sans);
+  font-weight: var(--vl-fw-medium);
+  font-size: var(--vl-fs-label);
+  line-height: var(--vl-lh-body-tight);
+  letter-spacing: var(--vl-ls-label);
+  text-transform: uppercase;
+  color: var(--vl-fg-1);
+  margin: 0;
+}
+
+.vl-label--green { color: var(--vl-accent); }
+.vl-label--mute { color: var(--vl-fg-3); }
+
+/* Lead paragraph — sits below H1 or section opener */
+.vl-lead {
+  font-family: var(--vl-font-sans);
+  font-weight: var(--vl-fw-regular);
+  font-size: var(--vl-fs-body-l);
+  line-height: 1.5;
+  color: var(--vl-fg-1);
+  max-width: 56ch;
+}
+
+/* Body / prose */
+.vl-body {
+  font-family: var(--vl-font-sans);
+  font-size: var(--vl-fs-body);
+  line-height: var(--vl-lh-body);
+  color: var(--vl-fg-1);
+}
+
+.vl-body-s {
+  font-family: var(--vl-font-sans);
+  font-size: var(--vl-fs-body-s);
+  line-height: var(--vl-lh-body);
+  color: var(--vl-fg-2);
+}
+
+/* Numerals — tabular, mono, for step numbers and prices */
+.vl-num {
+  font-family: var(--vl-font-mono);
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  font-size: var(--vl-fs-mono);
+  font-weight: var(--vl-fw-regular);
+  letter-spacing: 0;
+  color: var(--vl-fg-1);
+}
+
+.vl-step-num {
+  font-family: var(--vl-font-mono);
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--vl-accent);
+  font-weight: var(--vl-fw-regular);
+}
+
+/* Inline link — voice-green underline, no color change on hover */
+a, .vl-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--vl-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: text-decoration-thickness var(--vl-dur-fast) var(--vl-ease);
+}
+a:hover, .vl-link:hover {
+  text-decoration-thickness: 3px;
+}
+a:focus-visible, .vl-link:focus-visible {
+  outline: 2px solid var(--vl-accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Pull quote — the "left border in brand green" called out in copy doc notes */
+.vl-pullquote {
+  font-family: var(--vl-font-serif);
+  font-style: italic;
+  font-weight: var(--vl-fw-regular);
+  font-size: var(--vl-fs-display-m);
+  line-height: 1.25;
+  color: var(--vl-fg-1);
+  border-left: var(--vl-bw-quote) solid var(--vl-accent);
+  padding: var(--vl-s-3) 0 var(--vl-s-3) var(--vl-s-6);
+  margin: var(--vl-s-9) 0;
+  max-width: 28ch;
+}
+
+/* Hairline divider */
+hr, .vl-hr {
+  border: 0;
+  border-top: var(--vl-bw-hairline) solid var(--vl-border);
+  margin: var(--vl-s-9) 0;
+}
+
+/* Reduced motion — collapse all entry animations, freeze the waveform */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --vl-dur-fast: 0.01ms;
+    --vl-dur: 0.01ms;
+    --vl-dur-slow: 0.01ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
