@@ -111,6 +111,29 @@ textarea:focus {
   51%, 100% { opacity: 0 }
 }
 
+@keyframes vl-bar-pulse {
+  0%   { transform: scaleY(0.35); }
+  50%  { transform: scaleY(1); }
+  100% { transform: scaleY(0.35); }
+}
+
+@keyframes vl-bar-flat {
+  0%, 100% { transform: scaleY(0.18); }
+  50%      { transform: scaleY(0.22); }
+}
+
+@keyframes vl-rec-blink {
+  0%, 60%   { opacity: 1; }
+  61%, 100% { opacity: 0.25; }
+}
+
+@keyframes vl-scan {
+  0%   { transform: translateX(-8%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(108%); opacity: 0; }
+}
+
 section, footer {
   animation: vl-fade-in 600ms var(--vl-ease) both;
 }
