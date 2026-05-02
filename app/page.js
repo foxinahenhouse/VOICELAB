@@ -46,8 +46,8 @@ const PrimaryCTA = ({ children, href = CALENDAR_URL, large = false, style, varia
 }
 
 const Wordmark = ({ size = 13 }) => (
-  <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-    <span style={{ position: 'relative', width: 24, height: 24, display: 'inline-block' }}>
+  <span className="vl-wordmark" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <span style={{ position: 'relative', width: 24, height: 24, display: 'inline-block', flexShrink: 0 }}>
       <span style={{ position: 'absolute', inset: 0, borderRadius: 999, border: '1px solid rgba(31,37,32,0.16)' }} />
       <span style={{
         position: 'absolute', left: '50%', top: '50%',
@@ -56,10 +56,10 @@ const Wordmark = ({ size = 13 }) => (
         background: 'var(--vl-voice-green)'
       }} />
     </span>
-    <span style={{
+    <span className="vl-wordmark-text" style={{
       fontFamily: 'var(--vl-font-sans)', fontWeight: 600, fontSize: size,
       letterSpacing: '0.22em', color: 'var(--vl-ink)',
-      display: 'inline-flex', alignItems: 'center', gap: 8
+      display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap'
     }}>
       <span>THE</span>
       <span style={{ color: 'var(--vl-voice-green)', fontWeight: 400 }}>·</span>
@@ -92,17 +92,19 @@ const Nav = () => {
       <div style={{
         maxWidth: 'var(--vl-content-max)', margin: '0 auto',
         padding: '20px var(--vl-margin-x-desktop)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 32
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'nowrap'
       }}>
-        <a href="#top" style={{ textDecoration: 'none' }}><Wordmark /></a>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          {[['The problem', '#problem'], ['The sprint', '#sprint'], ['About', '#about']].map(([label, href]) => (
-            <a key={href} href={href} style={{
-              fontFamily: 'var(--vl-font-sans)', fontSize: 14, color: 'var(--vl-ink)',
-              textDecoration: 'none', fontWeight: 400
-            }}>{label}</a>
-          ))}
-          <PrimaryCTA style={{ padding: '10px 18px', fontSize: 13 }}>Book a discovery call</PrimaryCTA>
+        <a href="#top" style={{ textDecoration: 'none', minWidth: 0, overflow: 'hidden' }}><Wordmark /></a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+          <div className="vl-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+            {[['The problem', '#problem'], ['The sprint', '#sprint'], ['About', '#about']].map(([label, href]) => (
+              <a key={href} href={href} style={{
+                fontFamily: 'var(--vl-font-sans)', fontSize: 14, color: 'var(--vl-ink)',
+                textDecoration: 'none', fontWeight: 400
+              }}>{label}</a>
+            ))}
+          </div>
+          <PrimaryCTA style={{ padding: '10px 16px', fontSize: 13 }}>Book a call</PrimaryCTA>
         </div>
       </div>
     </nav>
@@ -219,18 +221,18 @@ const Hero = () => {
   const rotatingWords = ['understand.', 'say yes.', 'move.']
   return (
     <section id="top" style={{
-      padding: '72px var(--vl-margin-x-desktop) 96px',
+      padding: 'var(--vl-hero-pad-top) var(--vl-margin-x-desktop) var(--vl-hero-pad-bot)',
       maxWidth: 'var(--vl-content-max)', margin: '0 auto',
       position: 'relative'
     }}>
       <Label style={{ marginBottom: 32 }}>Voice coaching for founders and executives</Label>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 64, alignItems: 'stretch' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-hero)', gap: 'var(--vl-gap-64)', alignItems: 'stretch' }}>
         {/* LEFT */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 48 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 'var(--vl-gap-32)' }}>
           <h1 style={{
             fontFamily: 'var(--vl-font-serif)', fontWeight: 400,
-            fontSize: 'clamp(52px, 7.2vw, 104px)', lineHeight: 0.98, letterSpacing: '-0.018em',
+            fontSize: 'clamp(40px, 11vw, 104px)', lineHeight: 0.98, letterSpacing: '-0.018em',
             margin: 0, maxWidth: '14ch', textWrap: 'balance', color: 'var(--vl-ink)'
           }}>
             Speak so they<br /><Typewriter words={rotatingWords} />
@@ -259,14 +261,14 @@ const Hero = () => {
           borderRadius: 6,
           padding: '20px 24px 24px',
           display: 'flex', flexDirection: 'column', gap: 20,
-          minHeight: 380
+          minHeight: 320
         }}>
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
             fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
             textTransform: 'uppercase', color: 'var(--vl-graphite)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span style={{
                 width: 8, height: 8, borderRadius: '50%',
                 background: 'var(--vl-voice-green)',
@@ -415,11 +417,11 @@ const Problem = () => {
   ]
 
   return (
-    <section id="problem" style={{ padding: '128px var(--vl-margin-x-desktop)' }}>
+    <section id="problem" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
         <Label style={{ marginBottom: 32 }}>Why you're here</Label>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 96, alignItems: 'end', marginBottom: 56 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'end', marginBottom: 56 }}>
           <h2 style={{
             fontFamily: 'var(--vl-font-serif)', fontWeight: 400,
             fontSize: 'clamp(36px, 4.4vw, 60px)', lineHeight: 1.05, letterSpacing: '-0.012em',
@@ -438,7 +440,7 @@ const Problem = () => {
 
         {/* Said vs Heard chart */}
         <div style={{
-          padding: '32px 32px 24px',
+          padding: 'clamp(20px, 4vw, 32px) clamp(16px, 3vw, 32px) 24px',
           border: '1px solid var(--vl-hairline)', borderRadius: 6,
           background: 'var(--vl-bone)'
         }}>
@@ -469,7 +471,7 @@ const Problem = () => {
             <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>The four rooms</div>
             <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>You meant → You sounded → Cost</div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 16 }}>
             {scenarios.map((s, i) => (
               <div key={i} style={{
                 display: 'flex', flexDirection: 'column', gap: 18,
@@ -503,7 +505,7 @@ const Problem = () => {
         </div>
 
         {/* Diagnosis */}
-        <div style={{ marginTop: 56, display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 96, alignItems: 'start' }}>
+        <div style={{ marginTop: 56, display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'start' }}>
           <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 17, lineHeight: 1.6, color: 'var(--vl-ink)', margin: 0, maxWidth: '52ch' }}>
             When the stakes go up, something in your delivery doesn't land. Maybe your voice <span style={{ color: 'var(--vl-voice-green)', fontWeight: 500 }}>goes flat</span>. Maybe you <span style={{ color: 'var(--vl-voice-green)', fontWeight: 500 }}>rush the point</span> that needed to land. Maybe colleagues read your delivery as uncertain when you're actually confident — or as disengaged when you're fully prepared.
           </p>
@@ -594,11 +596,11 @@ const StakesChart = () => {
 // ---------- STAKES ----------
 
 const Stakes = () => (
-  <section id="stakes" style={{ padding: '128px var(--vl-margin-x-desktop)', background: 'rgb(19,21,20)', color: 'var(--vl-paper)' }}>
+  <section id="stakes" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop)', background: 'rgb(19,21,20)', color: 'var(--vl-paper)' }}>
     <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
       <Label color="green" style={{ marginBottom: 32, color: 'rgb(189,200,241)' }}>What's at stake</Label>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 96, alignItems: 'end', marginBottom: 56 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'end', marginBottom: 56 }}>
         <h2 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(36px, 4.4vw, 60px)', lineHeight: 1.05, letterSpacing: '-0.012em', margin: 0, maxWidth: '18ch', textWrap: 'balance', color: 'var(--vl-paper)' }}>
           Hedge funds now trade on the way a CEO <em style={{ fontStyle: 'italic', color: 'rgb(189,200,241)' }}>sounds</em>.
         </h2>
@@ -608,7 +610,7 @@ const Stakes = () => (
       </div>
 
       {/* Chart panel */}
-      <div style={{ position: 'relative', padding: '36px 32px 28px', border: '1px solid rgba(246,242,234,0.12)', borderRadius: 6, background: 'linear-gradient(180deg, rgba(246,242,234,0.025), rgba(246,242,234,0))' }}>
+      <div style={{ position: 'relative', padding: 'clamp(20px, 4vw, 36px) clamp(16px, 3vw, 32px) 28px', border: '1px solid rgba(246,242,234,0.12)', borderRadius: 6, background: 'linear-gradient(180deg, rgba(246,242,234,0.025), rgba(246,242,234,0))' }}>
         {[
           { top: -1, left: -1 }, { top: -1, right: -1 },
           { bottom: -1, left: -1 }, { bottom: -1, right: -1 }
@@ -638,7 +640,7 @@ const Stakes = () => (
       </div>
 
       {/* Closing statement + stats */}
-      <div style={{ marginTop: 72, display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 96, alignItems: 'start' }}>
+      <div style={{ marginTop: 'var(--vl-gap-64)', display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(28px, 3vw, 40px)', lineHeight: 1.1, letterSpacing: '-0.012em', color: 'var(--vl-paper)', margin: 0, maxWidth: '20ch' }}>
             The market has decided delivery is information.
@@ -647,7 +649,7 @@ const Stakes = () => (
             Most leaders haven't.
           </p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, paddingTop: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-3)', gap: 'var(--vl-gap-24)', paddingTop: 6 }}>
           {[
             { n: '93%', l: 'of meaning carried by delivery, not words' },
             { n: '<200ms', l: 'for a listener to read confidence in your voice' },
@@ -719,15 +721,15 @@ const HearTheDifference = () => {
   const ticks = [1, 3, 5, 7, 10]
 
   return (
-    <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+    <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 24 }}>
       <figure style={{
         gridColumn: '1 / -1', margin: 0,
         background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)',
         borderRadius: 6, overflow: 'hidden', position: 'relative'
       }}>
         {/* Top bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', padding: '20px 28px 18px', borderBottom: '1px solid var(--vl-hairline)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 16, padding: 'clamp(14px, 3vw, 20px) clamp(16px, 3vw, 28px) 18px', borderBottom: '1px solid var(--vl-hairline)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flexWrap: 'wrap' }}>
             <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-graphite)', letterSpacing: '0.04em' }}>05</span>
             <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>
               Hear the difference — <span style={{ color: 'var(--vl-ink)' }}>same speaker, same words</span>
@@ -746,7 +748,7 @@ const HearTheDifference = () => {
               : <svg width="16" height="16" viewBox="0 0 14 14" fill="currentColor"><path d="M2 1 L13 7 L2 13 Z" /></svg>
             }
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18, justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18, justifyContent: 'flex-end', minWidth: 0, flexWrap: 'wrap' }}>
             <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-graphite)', letterSpacing: '0.04em' }}>
               {formatTime(progress * (durMs / 1000))}<span style={{ opacity: 0.5 }}> / {formatTime(durMs / 1000)}</span>
             </span>
@@ -757,22 +759,22 @@ const HearTheDifference = () => {
         </div>
 
         {/* Headlines */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', padding: '36px 28px 24px', gap: 0, position: 'relative' }}>
-          <div style={{ paddingRight: 36 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', padding: 'clamp(24px, 4vw, 36px) clamp(16px, 3vw, 28px) 24px', gap: 'var(--vl-gap-32)', position: 'relative' }}>
+          <div style={{ paddingRight: 'clamp(0px, 4vw, 36px)' }}>
             <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)', marginBottom: 14 }}>Day 01 — Before</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(28px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-ink)', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
+            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(24px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-ink)', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
             <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: '14px 0 0', maxWidth: '36ch' }}>
               Opening line of an investor pitch. Read aloud, day one — clenched, ahead of breath.
             </p>
           </div>
-          <div style={{ paddingLeft: 36, textAlign: 'right' }}>
+          <div style={{ paddingLeft: 'clamp(0px, 4vw, 36px)', textAlign: 'right' }}>
             <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-voice-green)', marginBottom: 14 }}>Day 10 — After</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(28px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-voice-green)', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
+            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(24px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-voice-green)', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
             <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: '14px 0 0 auto', maxWidth: '36ch' }}>
               The person is the same. <span style={{ color: 'var(--vl-ink)' }}>How it lands isn't.</span>
             </p>
           </div>
-          <div aria-hidden style={{ position: 'absolute', top: 24, bottom: 0, left: '50%', width: 1, background: 'var(--vl-hairline)' }} />
+          <div aria-hidden className="vl-mobile-hide" style={{ position: 'absolute', top: 24, bottom: 0, left: '50%', width: 1, background: 'var(--vl-hairline)' }} />
         </div>
 
         {/* Wave bars */}
@@ -844,10 +846,10 @@ const Sprint = () => {
   ]
 
   return (
-    <section id="sprint" style={{ padding: '128px var(--vl-margin-x-desktop)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
+    <section id="sprint" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
         <Label style={{ marginBottom: 32 }}>Where it starts</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 96, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'start' }}>
           <h2 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(40px, 5.2vw, 72px)', lineHeight: 1.02, letterSpacing: '-0.014em', margin: 0, maxWidth: '14ch', textWrap: 'balance', color: 'var(--vl-ink)' }}>
             The <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>Voice Sprint.</em> Ten days that set the foundation.
           </h2>
@@ -868,7 +870,7 @@ const Sprint = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: 96, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+        <div style={{ marginTop: 'var(--vl-gap-96)', display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 24 }}>
           {cards.map((r, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '28px 24px', background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)', borderRadius: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -897,17 +899,17 @@ const Testimonials = () => {
   ]
 
   return (
-    <section id="testimonials" style={{ padding: '128px var(--vl-margin-x-desktop)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
+    <section id="testimonials" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
-        <div style={{ marginBottom: 72 }}>
+        <div style={{ marginBottom: 'var(--vl-gap-64)' }}>
           <Label style={{ marginBottom: 32 }}>What clients say</Label>
           <h2 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(36px, 4.4vw, 60px)', lineHeight: 1.04, letterSpacing: '-0.012em', margin: 0, maxWidth: '18ch', textWrap: 'balance', color: 'var(--vl-ink)' }}>
             The shift shows up <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>where it counts</em>.
           </h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', gap: 'var(--vl-gap-32)' }}>
           {quotes.map((q, i) => (
-            <figure key={i} style={{ margin: 0, padding: '36px 36px 28px', background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)', borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 22, position: 'relative' }}>
+            <figure key={i} style={{ margin: 0, padding: 'clamp(24px, 4vw, 36px) clamp(20px, 4vw, 36px) 28px', background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)', borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 22, position: 'relative' }}>
               <span aria-hidden style={{ position: 'absolute', top: 18, right: 28, fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontSize: 96, lineHeight: 0.9, color: 'var(--vl-voice-green)', opacity: 0.18, pointerEvents: 'none' }}>"</span>
               <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px, 2.2vw, 30px)', lineHeight: 1.18, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: 0, maxWidth: '20ch' }}>{q.pull}</p>
               <blockquote style={{ margin: 0, fontFamily: 'var(--vl-font-sans)', fontStyle: 'normal', fontWeight: 400, fontSize: 16, lineHeight: 1.55, color: 'var(--vl-ink)' }}>{q.body}</blockquote>
@@ -936,10 +938,10 @@ const WhoFor = () => {
   ]
 
   return (
-    <section id="who" style={{ padding: '128px var(--vl-margin-x-desktop) 72px' }}>
+    <section id="who" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop) var(--vl-section-y-tight)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
         <Label style={{ marginBottom: 32 }}>Who the voice sprint is for</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', gap: 'var(--vl-gap-96)', alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
             <h2 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(32px, 3.6vw, 48px)', lineHeight: 1.15, letterSpacing: '-0.012em', margin: 0, maxWidth: '24ch', color: 'var(--vl-ink)' }}>
               You're a <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>founder, executive,</em> or <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>technical leader</em> who communicates constantly — and something isn't landing.
@@ -973,11 +975,11 @@ const WhoFor = () => {
 const About = () => {
   const credentials = ['Co-founder + CEO', 'Head of Community', 'Classically trained opera singer', 'Currently performing a one-woman show']
   return (
-    <section id="about" style={{ padding: '72px var(--vl-margin-x-desktop) 128px', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)' }}>
+    <section id="about" style={{ padding: 'var(--vl-section-y-tight) var(--vl-margin-x-desktop) var(--vl-section-y)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
         <Label style={{ marginBottom: 32 }}>About</Label>
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 64, alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-about)', gap: 'var(--vl-gap-64)', alignItems: 'start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 320 }}>
             <div style={{ width: '100%', aspectRatio: '4 / 5', border: '1px solid var(--vl-hairline)', borderRadius: 6, position: 'relative', overflow: 'hidden', boxShadow: 'var(--vl-shadow-card)' }}>
               <img src="/assets/genevieve-portrait.jpg" alt="Genevieve Kim" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               <div style={{ position: 'absolute', right: 12, top: 12, width: 5, height: 5, borderRadius: 999, background: 'var(--vl-voice-green)' }} />
@@ -1026,9 +1028,9 @@ const About = () => {
 // ---------- CLOSING CTA / FOOTER ----------
 
 const ClosingCTA = () => (
-  <section style={{ padding: '128px var(--vl-margin-x-desktop) 0', background: 'var(--vl-paper)' }}>
+  <section style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop) 0', background: 'var(--vl-paper)' }}>
     <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 96, alignItems: 'start', paddingBottom: 96 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-21)', gap: 'var(--vl-gap-96)', alignItems: 'start', paddingBottom: 'var(--vl-gap-96)' }}>
         <div>
           <Label style={{ marginBottom: 32 }}>Start here</Label>
           <h2 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(40px, 5vw, 68px)', lineHeight: 1.04, letterSpacing: '-0.014em', margin: 0, maxWidth: '16ch', textWrap: 'balance', color: 'var(--vl-ink)' }}>Start with a conversation.</h2>
