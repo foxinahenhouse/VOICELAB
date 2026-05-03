@@ -356,26 +356,26 @@ const SaidHeardChart = () => {
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" width="100%" height="auto" style={{ display: 'block' }} aria-hidden>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" width="100%" style={{ display: 'block', height: 'clamp(200px, 18vw, 220px)' }} aria-hidden>
         {[0.25, 0.5, 0.75].map((p, i) => (
-          <line key={i} x1={0} x2={W} y1={H * p} y2={H * p} stroke={HAIR} strokeWidth={1} />
+          <line key={i} x1={0} x2={W} y1={H * p} y2={H * p} stroke={HAIR} strokeWidth={1} vectorEffect="non-scaling-stroke" />
         ))}
-        <polygon points={gapPath} fill={INK} opacity={0.06} />
-        <line x1={divX} x2={divX} y1={TOP - 10} y2={BOT + 10} stroke={GREEN} strokeWidth={1} strokeDasharray="2 3" opacity={0.7} />
-        <polyline fill="none" stroke={INK} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+        <polygon points={gapPath} fill={INK} opacity={0.12} />
+        <line x1={divX} x2={divX} y1={TOP - 10} y2={BOT + 10} stroke={GREEN} strokeWidth={1} strokeDasharray="2 3" opacity={0.7} vectorEffect="non-scaling-stroke" />
+        <polyline fill="none" stroke={INK} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"
           points={saidPts.map(([x, y]) => `${x},${y}`).join(' ')} />
-        <polyline fill="none" stroke={GREEN} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-          strokeDasharray="6 5"
+        <polyline fill="none" stroke={GREEN} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"
+          strokeDasharray="8 5"
           points={heardPts.map(([x, y]) => `${x},${y}`).join(' ')} />
-        <circle cx={saidPts[N - 1][0]} cy={saidPts[N - 1][1]} r={4} fill={INK} />
-        <circle cx={heardPts[N - 1][0]} cy={heardPts[N - 1][1]} r={4} fill={GREEN} />
+        <circle cx={saidPts[N - 1][0]} cy={saidPts[N - 1][1]} r={4} fill={INK} vectorEffect="non-scaling-stroke" />
+        <circle cx={heardPts[N - 1][0]} cy={heardPts[N - 1][1]} r={4} fill={GREEN} vectorEffect="non-scaling-stroke" />
       </svg>
-      <div style={{
+      <div className="vl-mobile-hide" style={{
         position: 'absolute', left: 0, top: 4,
         fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
         textTransform: 'uppercase', color: 'var(--vl-graphite)'
       }}>Minute 00:00 · You start speaking</div>
-      <div style={{
+      <div className="vl-mobile-hide" style={{
         position: 'absolute', right: 0, top: 4,
         fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
         textTransform: 'uppercase', color: 'var(--vl-graphite)'
@@ -386,6 +386,107 @@ const SaidHeardChart = () => {
         fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
         textTransform: 'uppercase', color: 'var(--vl-voice-green)', whiteSpace: 'nowrap'
       }}>↓ Room drifts</div>
+    </div>
+  )
+}
+
+// ---------- SCENARIO CAROUSEL ----------
+
+const ScenarioCarousel = ({ scenarios }) => {
+  const [active, setActive] = useState(0)
+  const trackRef = useRef(null)
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const onScroll = () => {
+      const scrollLeft = track.scrollLeft
+      let closest = 0, minDist = Infinity
+      Array.from(track.children).forEach((card, i) => {
+        const dist = Math.abs(card.offsetLeft - scrollLeft)
+        if (dist < minDist) { minDist = dist; closest = i }
+      })
+      setActive(closest)
+    }
+    track.addEventListener('scroll', onScroll, { passive: true })
+    return () => track.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const goTo = (i) => {
+    const track = trackRef.current
+    if (!track) return
+    const card = track.children[i]
+    if (card) track.scrollTo({ left: card.offsetLeft, behavior: 'smooth' })
+  }
+
+  return (
+    <div style={{ marginTop: 56 }}>
+      <div style={{
+        display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+        marginBottom: 20, gap: 24, flexWrap: 'wrap'
+      }}>
+        <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>The four rooms</div>
+        <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>
+          <span className="vl-mobile-hide">You meant → You sounded → Cost</span>
+          <span className="vl-desktop-hide">Swipe →</span>
+        </div>
+      </div>
+
+      <div ref={trackRef} className="vl-scenario-track">
+        {scenarios.map((s, i) => (
+          <div key={i} className="vl-scenario-card" style={{
+            display: 'flex', flexDirection: 'column', gap: 18,
+            padding: '22px 20px',
+            background: 'var(--vl-paper)',
+            border: '1px solid var(--vl-hairline)', borderRadius: 6
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>
+                {String(i + 1).padStart(2, '0')} / {s.tag.toUpperCase()}
+              </span>
+            </div>
+            <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 17, lineHeight: 1.35, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: 0 }}>
+              {s.setup}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[['You meant', s.meant, 'var(--vl-ink)', false], ['You sounded', s.sounded, 'var(--vl-voice-green)', true]].map(([lbl, val, clr, italic]) => (
+                <div key={lbl} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                  <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)', flex: '0 0 auto', width: 84 }}>{lbl}</span>
+                  <span style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, fontWeight: 500, color: clr, fontStyle: italic ? 'italic' : 'normal' }}>{val}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ paddingTop: 14, borderTop: '1px solid var(--vl-hairline)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>Cost</div>
+              <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--vl-ink)', margin: 0 }}>{s.cost}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--vl-hairline)'
+      }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {scenarios.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Go to card ${i + 1}`}
+              style={{
+                width: i === active ? 20 : 8, height: 8, borderRadius: 999,
+                background: i === active ? 'var(--vl-ink)' : 'rgba(31,37,32,0.18)',
+                border: 'none', cursor: 'pointer', padding: 0,
+                transition: 'width 220ms var(--vl-ease), background 220ms var(--vl-ease)'
+              }}
+            />
+          ))}
+        </div>
+        <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>
+          {String(active + 1).padStart(2, '0')} / {String(scenarios.length).padStart(2, '0')}
+        </span>
+      </div>
     </div>
   )
 }
@@ -445,7 +546,7 @@ const Problem = () => {
           background: 'var(--vl-bone)'
         }}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 28, marginBottom: 24, flexWrap: 'wrap',
+            display: 'flex', alignItems: 'center', gap: 'clamp(12px, 3vw, 28px)', marginBottom: 24, flexWrap: 'wrap',
             fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
             textTransform: 'uppercase', color: 'var(--vl-graphite)'
           }}>
@@ -457,52 +558,13 @@ const Problem = () => {
               <svg width="22" height="2" style={{ display: 'block' }}><line x1="0" y1="1" x2="22" y2="1" stroke="var(--vl-voice-green)" strokeWidth="2" strokeDasharray="4 3" /></svg>
               What the room heard
             </span>
-            <span style={{ marginLeft: 'auto', color: 'var(--vl-voice-green)' }}>The gap is the problem</span>
+            <span style={{ color: 'var(--vl-voice-green)' }}>The gap is the problem</span>
           </div>
           <SaidHeardChart />
         </div>
 
-        {/* Scenario cards */}
-        <div style={{ marginTop: 56 }}>
-          <div style={{
-            display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
-            marginBottom: 20, gap: 24, flexWrap: 'wrap'
-          }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>The four rooms</div>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>You meant → You sounded → Cost</div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 16 }}>
-            {scenarios.map((s, i) => (
-              <div key={i} style={{
-                display: 'flex', flexDirection: 'column', gap: 18,
-                padding: '22px 20px',
-                background: 'var(--vl-paper)',
-                border: '1px solid var(--vl-hairline)', borderRadius: 6
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>
-                    {String(i + 1).padStart(2, '0')} / {s.tag.toUpperCase()}
-                  </span>
-                </div>
-                <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 17, lineHeight: 1.35, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: 0 }}>
-                  {s.setup}
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[['You meant', s.meant, 'var(--vl-ink)', false], ['You sounded', s.sounded, 'var(--vl-voice-green)', true]].map(([lbl, val, clr, italic]) => (
-                    <div key={lbl} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                      <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)', flex: '0 0 auto', width: 84 }}>{lbl}</span>
-                      <span style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, fontWeight: 500, color: clr, fontStyle: italic ? 'italic' : 'normal' }}>{val}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ paddingTop: 14, borderTop: '1px solid var(--vl-hairline)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>Cost</div>
-                  <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--vl-ink)', margin: 0 }}>{s.cost}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Scenario cards carousel */}
+        <ScenarioCarousel scenarios={scenarios} />
 
         {/* Diagnosis */}
         <div style={{ marginTop: 56, display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'start' }}>
@@ -670,11 +732,35 @@ const Stakes = () => (
 
 const SprintIcon = ({ kind }) => {
   const stroke = 'var(--vl-voice-green)'
-  const common = { width: 36, height: 36, fill: 'none', stroke, strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
-  if (kind === 'authority') return <svg viewBox="0 0 40 40" {...common}><path d="M20 5 v22" /><path d="M14 27 h12" /><path d="M16 27 l4 8 l4 -8" /><circle cx="20" cy="5" r="1.5" fill={stroke} /></svg>
-  if (kind === 'warmth') return <svg viewBox="0 0 40 40" {...common}><path d="M8 26 a10 10 0 0 1 10 -10" /><path d="M32 14 a10 10 0 0 0 -10 10" /><circle cx="18" cy="16" r="1.5" fill={stroke} /><circle cx="22" cy="24" r="1.5" fill={stroke} /></svg>
-  if (kind === 'clarity') return <svg viewBox="0 0 40 40" {...common}><path d="M5 20 q3 -8 6 0 t6 0 t6 0 t6 0" /><circle cx="35" cy="20" r="2" fill={stroke} /></svg>
-  if (kind === 'presence') return <svg viewBox="0 0 40 40" {...common}><circle cx="20" cy="20" r="3" fill={stroke} /><circle cx="20" cy="20" r="8" /><circle cx="20" cy="20" r="14" opacity="0.5" /></svg>
+  const common = { width: '100%', height: 40, viewBox: '0 0 200 40', fill: 'none', stroke, strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
+  if (kind === 'authority') return (
+    <svg {...common}>
+      <path d="M 0,20 L 6,9 L 11,28 L 16,11 L 21,29 L 26,8 L 31,26 L 36,12 L 41,28 L 46,10 L 51,24 L 56,8 L 61,23 L 66,15 L 71,27 L 76,13 L 81,22 L 86,17 L 91,28 L 96,18 L 101,24 L 106,20 L 112,20" />
+      <path d="M 112,20 L 194,20" />
+      <circle cx="197" cy="20" r="3" fill={stroke} stroke="none" />
+    </svg>
+  )
+  if (kind === 'warmth') return (
+    <svg {...common}>
+      <path d="M 0,20 L 95,20" />
+      <path d="M 95,20 C 103,20 106,10 112,12 C 118,14 122,26 130,26 C 138,26 141,16 148,14 C 155,12 158,18 166,18 C 173,18 179,22 187,20 L 194,20" />
+      <circle cx="197" cy="20" r="3" fill={stroke} stroke="none" />
+    </svg>
+  )
+  if (kind === 'clarity') return (
+    <svg {...common}>
+      <path d="M 0,20 L 4,12 L 7,27 L 10,14 L 13,28 L 16,10 L 19,26 L 22,13 L 25,29 L 28,11 L 31,25 L 34,9 L 37,27 L 40,15 L 43,28 L 46,12 L 49,24 L 52,10 L 55,26 L 58,16 L 61,28 L 64,13 L 67,25 L 70,11 L 73,23 L 77,20 L 80,25 L 83,15 L 87,22 L 91,20 L 95,20" />
+      <path d="M 95,20 C 100,10 105,10 110,20 C 115,30 120,30 125,20 C 130,10 135,10 140,20 C 145,30 150,30 155,20 C 160,10 165,10 170,20 C 175,28 180,28 187,20 L 194,20" />
+      <circle cx="197" cy="20" r="3" fill={stroke} stroke="none" />
+    </svg>
+  )
+  if (kind === 'presence') return (
+    <svg {...common}>
+      <path d="M 0,20 L 95,20" strokeDasharray="4 6" />
+      <path d="M 95,20 L 194,20" />
+      <circle cx="197" cy="20" r="3" fill={stroke} stroke="none" />
+    </svg>
+  )
   return null
 }
 
@@ -839,10 +925,10 @@ const HearTheDifference = () => {
 
 const Sprint = () => {
   const cards = [
-    { icon: 'authority', title: 'Authority and command', pull: "Stop sounding tentative when you're actually certain.", body: "You'll develop the weight and steadiness that makes people stop talking over you — so your point lands the first time, not the third." },
-    { icon: 'warmth', title: 'Warmth and trust', pull: 'Move past flat delivery that reads as cold or checked-out.', body: "You'll find the register that makes colleagues feel addressed, not lectured — so people want to be in the room with you." },
-    { icon: 'clarity', title: 'Clarity and impact', pull: 'Get out of your own way when it matters most.', body: "You'll learn to land your point cleanly under pressure — so what you say is what people hear." },
-    { icon: 'presence', title: 'Presence and connection', pull: 'Hold the room without raising your voice.', body: "You'll practice the small shifts that make people feel addressed — so you're heard as engaged, not detached." },
+    { icon: 'authority', titleMain: 'Authority', titleSub: '& command.', beforeLabel: 'TENTATIVE', afterLabel: 'COMMANDING', pull: "Stop sounding tentative when you're actually certain.", body: "You'll develop the weight and steadiness that makes people stop talking over you — so your point lands the first time, not the third." },
+    { icon: 'warmth', titleMain: 'Warmth', titleSub: '& trust.', beforeLabel: 'FLAT', afterLabel: 'ALIVE', pull: 'Move past flat delivery that reads as cold or checked-out.', body: "You'll find the register that makes colleagues feel addressed, not lectured — so people want to be in the room with you." },
+    { icon: 'clarity', titleMain: 'Clarity', titleSub: '& impact.', beforeLabel: 'NOISE', afterLabel: 'SIGNAL', pull: 'Get out of your own way when it matters most.', body: "You'll learn to land your point cleanly under pressure — so what you say is what people hear." },
+    { icon: 'presence', titleMain: 'Presence', titleSub: '& connection.', beforeLabel: 'FADING', afterLabel: 'HELD', pull: 'Hold the room without raising your voice.', body: "You'll practice the small shifts that make people feel addressed — so you're heard as engaged, not detached." },
   ]
 
   return (
@@ -870,18 +956,33 @@ const Sprint = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: 'var(--vl-gap-96)', display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 24 }}>
-          {cards.map((r, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '28px 24px', background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)', borderRadius: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <SprintIcon kind={r.icon} />
-                <div style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-voice-green)', letterSpacing: '0.04em' }}>{String(i + 1).padStart(2, '0')}</div>
+        <div style={{ marginTop: 'var(--vl-gap-96)' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
+            <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(17px, 1.6vw, 20px)', color: 'var(--vl-graphite)' }}>What you'll build</span>
+            <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>4 focus areas · 10 days</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 20 }}>
+            {cards.map((r, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 20px 24px', background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)', borderRadius: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-voice-green)', letterSpacing: '0.04em' }}>{String(i + 1).padStart(2, '0')} / 04</span>
+                </div>
+                <div>
+                  <SprintIcon kind={r.icon} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                    <span style={{ color: 'var(--vl-graphite)' }}>{r.beforeLabel}</span>
+                    <span style={{ color: 'var(--vl-ink)' }}>{r.afterLabel}</span>
+                  </div>
+                </div>
+                <div style={{ marginTop: 6 }}>
+                  <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 24, lineHeight: 1.1, letterSpacing: '-0.005em', color: 'var(--vl-ink)' }}>{r.titleMain}</div>
+                  <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 24, lineHeight: 1.1, letterSpacing: '-0.005em', color: 'var(--vl-voice-green)' }}>{r.titleSub}</div>
+                </div>
+                <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 15, lineHeight: 1.35, color: 'var(--vl-graphite)', margin: 0 }}>{r.pull}</p>
+                <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: 0 }}>{r.body}</p>
               </div>
-              <h4 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 500, fontSize: 22, lineHeight: 1.15, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: '4px 0 0' }}>{r.title}</h4>
-              <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 17, lineHeight: 1.3, color: 'var(--vl-voice-green)', margin: 0 }}>{r.pull}</p>
-              <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: 0 }}>{r.body}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <HearTheDifference />

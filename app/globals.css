@@ -199,6 +199,10 @@ section, footer {
     display: none !important;
   }
 
+  .vl-desktop-hide {
+    display: inline !important;
+  }
+
   .vl-wordmark-text {
     letter-spacing: 0.14em !important;
     gap: 6px !important;
@@ -212,6 +216,34 @@ section, footer {
 
   .vl-wordmark-text {
     font-size: 11px !important;
+  }
+}
+
+.vl-desktop-hide {
+  display: none;
+}
+
+/* Scenario cards carousel */
+.vl-scenario-track {
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.vl-scenario-track::-webkit-scrollbar {
+  display: none;
+}
+.vl-scenario-card {
+  flex: 0 0 calc(50% - 8px);
+  scroll-snap-align: start;
+  min-width: 0;
+}
+@media (max-width: 768px) {
+  .vl-scenario-card {
+    flex: 0 0 86%;
   }
 }
 
