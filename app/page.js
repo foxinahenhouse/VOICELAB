@@ -983,15 +983,12 @@ const Sprint = () => {
 
         <div style={{ marginTop: 'var(--vl-gap-96)' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
-            <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(32px, 3.6vw, 52px)', color: 'var(--vl-ink)' }}>What you'll build</span>
-            <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>4 focus areas · 10 days</span>
+            <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(26px, 2.9vw, 42px)', color: 'var(--vl-ink)' }}>What you'll build</span>
+            <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>Focus areas · 10 days</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 20 }}>
             {cards.map((r, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 20px 24px', background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)', borderRadius: 6 }}>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-voice-green)', letterSpacing: '0.04em' }}>{String(i + 1).padStart(2, '0')} / 04</span>
-                </div>
                 <div>
                   <SprintIcon kind={r.icon} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
@@ -1003,7 +1000,7 @@ const Sprint = () => {
                   <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(28px, 2.8vw, 42px)', lineHeight: 1.05, letterSpacing: '-0.01em', color: 'var(--vl-ink)' }}>{r.titleMain}</div>
                   <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(28px, 2.8vw, 42px)', lineHeight: 1.05, letterSpacing: '-0.01em', color: 'var(--vl-voice-green)' }}>{r.titleSub}</div>
                 </div>
-                <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 15, lineHeight: 1.35, color: 'var(--vl-graphite)', margin: 0 }}>{r.pull}</p>
+                <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 19, lineHeight: 1.35, color: 'var(--vl-graphite)', margin: 0 }}>{r.pull}</p>
                 <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: 0 }}>{r.body}</p>
               </div>
             ))}
