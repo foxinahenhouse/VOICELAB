@@ -454,7 +454,7 @@ const ScenarioCarousel = ({ scenarios }) => {
             </div>
 
             {/* Setup */}
-            <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 15, lineHeight: 1.45, letterSpacing: '-0.005em', color: 'var(--vl-graphite)', margin: '0 0 16px' }}>
+            <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 19, lineHeight: 1.4, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: '0 0 16px' }}>
               {s.setup}
             </p>
 
@@ -483,7 +483,7 @@ const ScenarioCarousel = ({ scenarios }) => {
             {/* Cost */}
             <div style={{ paddingTop: 14, borderTop: '1px solid var(--vl-hairline)', marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
               <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--vl-graphite)', opacity: 0.7 }}>Cost</div>
-              <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.55, color: 'var(--vl-ink)', margin: 0 }}>{s.cost}</p>
+              <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 15, lineHeight: 1.55, color: 'var(--vl-ink)', margin: 0 }}>{s.cost}</p>
             </div>
           </div>
         ))}
