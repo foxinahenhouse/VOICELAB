@@ -631,6 +631,9 @@ const StakesChart = () => {
 
   const barW = (W - PAD_X * 2) / N
 
+  const flagIdx = 62
+  const flagX = PAD_X + flagIdx * barW + barW / 2
+
   const pricePts = Array.from({ length: N }, (_, i) => {
     const lag = Math.max(0, i - 3)
     const s = stress(lag)
@@ -641,9 +644,6 @@ const StakesChart = () => {
     const y = BASE_Y - 68 + preDrift + s * -18 + Math.sin(i * 0.6) * 3 + postDrop
     return [PAD_X + i * barW + barW / 2, y]
   })
-
-  const flagIdx = 62
-  const flagX = PAD_X + flagIdx * barW + barW / 2
   const PAPER = 'rgb(246,242,234)'
   const PERI = 'rgb(189,200,241)'
   const ALARM = 'rgb(255,90,80)'
