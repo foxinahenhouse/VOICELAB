@@ -747,12 +747,16 @@ const StakesChart = () => {
 
   const barW = (W - PAD_X * 2) / N;
 
-  // Price line — leads, then reacts to vocal stress (a beat behind)
+  // Price line — stable before stress event, sharp drop after flagIdx
   const pricePts = Array.from({ length: N }, (_, i) => {
     const lag = Math.max(0, i - 3);
     const s = stress(lag);
-    const drift = (i / N) * -22;
-    const y = BASE_Y - 60 + drift + s * -38 + Math.sin(i * 0.6) * 3;
+    const preDrift = (i / N) * -8;
+    // After the stress flag, price craters then partially recovers
+    const postDrop = i > flagIdx
+      ? Math.min((i - flagIdx) * 2.6, 58) * (1 - 0.35 * Math.max(0, (i - flagIdx - 10) / (N - flagIdx - 10)))
+      : 0;
+    const y = BASE_Y - 68 + preDrift + s * -18 + Math.sin(i * 0.6) * 3 + postDrop;
     const x = PAD_X + i * barW + barW / 2;
     return [x, y];
   });
@@ -763,6 +767,7 @@ const StakesChart = () => {
 
   const PAPER = 'rgb(246,242,234)';
   const PERI = 'rgb(189,200,241)';
+  const ALARM = 'rgb(255,90,80)';
   const DIM = 'rgba(246,242,234,0.32)';
   const HAIR = 'rgba(246,242,234,0.10)';
 
@@ -780,11 +785,12 @@ const StakesChart = () => {
         {/* vocal waveform — mirrored bars */}
         {bars.map((amp, i) => {
           const x = PAD_X + i * barW + barW / 2;
-          const isPeak = Math.abs(stress(i)) > 0.78;
-          const color = isPeak ? PERI : PAPER;
-          const opacity = isPeak ? 1 : 0.55;
+          const isStress = Math.abs(stress(i)) > 0.78;
+          const isNearFlag = Math.abs(i - flagIdx) <= 2;
+          const color = isNearFlag ? ALARM : isStress ? PERI : PAPER;
+          const opacity = isNearFlag ? 1 : isStress ? 0.95 : 0.72;
           return (
-            <g key={i} stroke={color} strokeWidth={1.4} strokeLinecap="round" opacity={opacity}>
+            <g key={i} stroke={color} strokeWidth={isNearFlag ? 2 : 1.4} strokeLinecap="round" opacity={opacity}>
               <line x1={x} x2={x} y1={BASE_Y - amp} y2={BASE_Y + amp} />
             </g>
           );
@@ -794,17 +800,17 @@ const StakesChart = () => {
         <polyline
           fill="none"
           stroke={PERI}
-          strokeWidth={1.8}
+          strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
           points={pricePts.map(([x, y]) => `${x},${y}`).join(' ')}
         />
         {/* end dot on price line */}
-        <circle cx={pricePts[pricePts.length - 1][0]} cy={pricePts[pricePts.length - 1][1]} r={4} fill={PERI} />
+        <circle cx={pricePts[pricePts.length - 1][0]} cy={pricePts[pricePts.length - 1][1]} r={5} fill={PERI} />
 
         {/* stress flag */}
-        <line x1={flagX} x2={flagX} y1={28} y2={H - 28} stroke={PERI} strokeWidth={1} strokeDasharray="2 3" opacity={0.6} />
-        <circle cx={flagX} cy={H - 28} r={3.5} fill={PERI} />
+        <line x1={flagX} x2={flagX} y1={28} y2={H - 28} stroke={ALARM} strokeWidth={1.5} strokeDasharray="3 3" opacity={0.9} />
+        <circle cx={flagX} cy={H - 28} r={5} fill={ALARM} opacity={0.95} />
       </svg>
 
       {/* SVG-side annotations as HTML (crisper text). Stress label sits BELOW the chart,
@@ -814,23 +820,23 @@ const StakesChart = () => {
         left: `${(flagX / W) * 100}%`,
         bottom: -2,
         transform: 'translateX(-50%)',
-        fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
-        textTransform: 'uppercase', color: PERI, whiteSpace: 'nowrap',
+        fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.16em',
+        textTransform: 'uppercase', color: ALARM, whiteSpace: 'nowrap',
         pointerEvents: 'none'
       }}>
         Stress · 04:32
       </div>
       <div style={{
         position: 'absolute', left: 0, top: 4,
-        fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
-        textTransform: 'uppercase', color: 'rgba(246,242,234,0.55)'
+        fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.14em',
+        textTransform: 'uppercase', color: 'rgba(246,242,234,0.82)'
       }}>
         Vocal pitch · Earnings call (live)
       </div>
       <div style={{
         position: 'absolute', right: 0, top: 4,
-        fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
-        textTransform: 'uppercase', color: 'rgba(246,242,234,0.55)'
+        fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.14em',
+        textTransform: 'uppercase', color: ALARM
       }}>
         $TICKR · −2.4%
       </div>
@@ -895,8 +901,8 @@ const Stakes = () =>
         {/* legend */}
         <div style={{
           marginTop: 18, display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap',
-          fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em',
-          textTransform: 'uppercase', color: 'rgba(246,242,234,0.6)'
+          fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.14em',
+          textTransform: 'uppercase', color: 'rgba(246,242,234,0.8)'
         }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 18, height: 1, background: 'rgb(246,242,234)', opacity: 0.7 }} />
@@ -907,10 +913,10 @@ const Stakes = () =>
             Share price
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 6, height: 6, borderRadius: 999, background: 'rgb(189,200,241)' }} />
+            <span style={{ width: 8, height: 8, borderRadius: 999, background: 'rgb(255,90,80)' }} />
             Stress event
           </span>
-          <span style={{ marginLeft: 'auto', color: 'rgba(246,242,234,0.4)' }}>Illustrative</span>
+          <span style={{ marginLeft: 'auto', color: 'rgba(246,242,234,0.55)' }}>Illustrative</span>
         </div>
       </div>
 
