@@ -983,7 +983,7 @@ const Sprint = () => {
 
         <div style={{ marginTop: 'var(--vl-gap-96)' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
-            <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(17px, 1.6vw, 20px)', color: 'var(--vl-graphite)' }}>What you'll build</span>
+            <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(32px, 3.6vw, 52px)', color: 'var(--vl-ink)' }}>What you'll build</span>
             <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>4 focus areas · 10 days</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-4)', gap: 20 }}>
@@ -1000,8 +1000,8 @@ const Sprint = () => {
                   </div>
                 </div>
                 <div style={{ marginTop: 6 }}>
-                  <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 24, lineHeight: 1.1, letterSpacing: '-0.005em', color: 'var(--vl-ink)' }}>{r.titleMain}</div>
-                  <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 24, lineHeight: 1.1, letterSpacing: '-0.005em', color: 'var(--vl-voice-green)' }}>{r.titleSub}</div>
+                  <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(28px, 2.8vw, 42px)', lineHeight: 1.05, letterSpacing: '-0.01em', color: 'var(--vl-ink)' }}>{r.titleMain}</div>
+                  <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(28px, 2.8vw, 42px)', lineHeight: 1.05, letterSpacing: '-0.01em', color: 'var(--vl-voice-green)' }}>{r.titleSub}</div>
                 </div>
                 <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 15, lineHeight: 1.35, color: 'var(--vl-graphite)', margin: 0 }}>{r.pull}</p>
                 <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: 0 }}>{r.body}</p>
