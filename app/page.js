@@ -851,14 +851,14 @@ const HearTheDifference = () => {
         borderRadius: 6, overflow: 'hidden', position: 'relative'
       }}>
         {/* Top bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 16, padding: 'clamp(14px, 3vw, 20px) clamp(16px, 3vw, 28px) 18px', borderBottom: '1px solid var(--vl-hairline)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 16, padding: '12px clamp(16px, 3vw, 28px)', borderBottom: '1px solid var(--vl-hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
             <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-graphite)', letterSpacing: '0.04em' }}>
               {formatTime(progress * (durMs / 1000))}<span style={{ opacity: 0.5 }}> / {formatTime(durMs / 1000)}</span>
             </span>
           </div>
           <button aria-label={playing ? 'Pause' : 'Play comparison'} onClick={() => setPlaying(p => !p)} style={{
-            width: 56, height: 56, borderRadius: 999,
+            width: 44, height: 44, borderRadius: 999,
             border: '1px solid var(--vl-voice-green)',
             background: playing ? 'var(--vl-voice-green)' : 'transparent',
             color: playing ? 'var(--vl-paper)' : 'var(--vl-voice-green)',
@@ -878,19 +878,19 @@ const HearTheDifference = () => {
         </div>
 
         {/* Headlines */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', gap: 0 }}>
-          <div style={{ padding: 'clamp(24px, 4vw, 36px) clamp(20px, 3vw, 40px) 28px', background: '#1c2820' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.62)', marginBottom: 14 }}>Day 01 — Before</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(24px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-paper)', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
-            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'rgba(246,242,234,0.72)', margin: '14px 0 0', maxWidth: '36ch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', gap: 0, background: 'linear-gradient(to right, #dce4ff 0%, #001a99 100%)' }}>
+          <div style={{ padding: '20px clamp(16px, 3vw, 28px)' }}>
+            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#0a1466', marginBottom: 10 }}>Day 01 — Before</div>
+            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(20px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#050d3a', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
+            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: '#1a2f80', margin: '10px 0 0', maxWidth: '36ch' }}>
               Opening line of an investor pitch. Read aloud, day one — clenched, ahead of breath.
             </p>
           </div>
-          <div style={{ padding: 'clamp(24px, 4vw, 36px) clamp(20px, 3vw, 40px) 28px', textAlign: 'right', background: 'var(--vl-voice-green-wash)' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-voice-green)', marginBottom: 14 }}>Day 10 — After</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(24px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-voice-green)', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
-            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'var(--vl-graphite)', margin: '14px 0 0 auto', maxWidth: '36ch' }}>
-              The person is the same. <span style={{ fontWeight: 500, color: 'var(--vl-ink)' }}>How it lands isn't.</span>
+          <div style={{ padding: '20px clamp(16px, 3vw, 28px)', textAlign: 'right' }}>
+            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(220,228,255,0.9)', marginBottom: 10 }}>Day 10 — After</div>
+            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(20px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#ffffff', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
+            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: 'rgba(220,228,255,0.88)', margin: '10px 0 0 auto', maxWidth: '36ch' }}>
+              The person is the same. <span style={{ fontWeight: 500, color: '#ffffff' }}>How it lands isn't.</span>
             </p>
           </div>
         </div>
@@ -904,14 +904,14 @@ const HearTheDifference = () => {
           display: 'grid', gridTemplateColumns: '1fr 1fr',
           cursor: 'pointer',
           borderBottom: '1px solid var(--vl-hairline)',
-          background: 'linear-gradient(to right, #1c2820 0%, #1c2820 50%, var(--vl-voice-green-wash) 50%, var(--vl-voice-green-wash) 100%)'
+          background: 'linear-gradient(to right, #dce4ff 0%, #001a99 100%)'
         }}>
           {/* Left: Day 01 */}
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '24px 0 24px 28px', flexDirection: 'row-reverse', gap: 0 }}>
             {beforeBars.map((h, i) => {
               const playedFrac = progress * 2
               const played = (i / N) <= playedFrac && progress < 0.501
-              return <span key={`b-${i}`} style={{ flex: '1 1 0', minWidth: 0, marginLeft: i === N - 1 ? 0 : 2, height: `${Math.max(6, h * 70)}%`, background: played ? 'rgba(246,242,234,0.92)' : 'rgba(246,242,234,0.15)', borderRadius: 1, transition: 'background 120ms linear' }} />
+              return <span key={`b-${i}`} style={{ flex: '1 1 0', minWidth: 0, marginLeft: i === N - 1 ? 0 : 2, height: `${Math.max(6, h * 70)}%`, background: played ? 'rgba(0,26,153,0.9)' : 'rgba(0,26,153,0.25)', borderRadius: 1 }} />
             })}
           </div>
           {/* Right: Day 10 */}
@@ -919,7 +919,7 @@ const HearTheDifference = () => {
             {afterBars.map((h, i) => {
               const playedFrac = (progress - 0.5) * 2
               const played = progress >= 0.5 && (i / N) <= playedFrac
-              return <span key={`a-${i}`} style={{ flex: '1 1 0', minWidth: 0, marginRight: i === N - 1 ? 0 : 2, height: `${Math.max(8, h * 90)}%`, background: played ? 'var(--vl-voice-green)' : 'rgba(0,51,255,0.18)', borderRadius: 1, transition: 'background 120ms linear' }} />
+              return <span key={`a-${i}`} style={{ flex: '1 1 0', minWidth: 0, marginRight: i === N - 1 ? 0 : 2, height: `${Math.max(8, h * 90)}%`, background: played ? 'rgba(220,228,255,0.95)' : 'rgba(220,228,255,0.3)', borderRadius: 1 }} />
             })}
           </div>
           <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, background: 'rgba(246,242,234,0.22)' }} />
