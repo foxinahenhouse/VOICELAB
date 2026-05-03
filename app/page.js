@@ -421,15 +421,14 @@ const ScenarioCarousel = ({ scenarios }) => {
 
   return (
     <div style={{ marginTop: 56 }}>
-      <div style={{
-        display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
-        marginBottom: 20, gap: 24, flexWrap: 'wrap'
-      }}>
-        <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>The four rooms</div>
-        <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>
-          <span className="vl-mobile-hide">You meant → You sounded → Cost</span>
-          <span className="vl-desktop-hide">Swipe →</span>
-        </div>
+      <div style={{ marginBottom: 24 }}>
+        <h3 style={{
+          fontFamily: 'var(--vl-font-serif)', fontWeight: 400,
+          fontSize: 'clamp(28px, 3.6vw, 48px)', lineHeight: 1.1, letterSpacing: '-0.012em',
+          margin: 0, color: 'var(--vl-ink)'
+        }}>
+          And that gap <em style={{ fontStyle: 'italic', color: 'var(--vl-voice-green)' }}>affects your conversations</em>.
+        </h3>
       </div>
 
       <div ref={trackRef} className="vl-scenario-track">
