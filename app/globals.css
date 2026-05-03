@@ -237,11 +237,16 @@ section, footer {
   display: none;
 }
 .vl-scenario-card {
-  flex: 0 0 calc(50% - 8px);
+  flex: 0 0 calc(25% - 12px);
   scroll-snap-align: start;
   min-width: 0;
 }
-@media (max-width: 768px) {
+@media (max-width: 960px) {
+  .vl-scenario-card {
+    flex: 0 0 calc(50% - 8px);
+  }
+}
+@media (max-width: 600px) {
   .vl-scenario-card {
     flex: 0 0 86%;
   }
