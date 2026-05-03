@@ -634,8 +634,11 @@ const StakesChart = () => {
   const pricePts = Array.from({ length: N }, (_, i) => {
     const lag = Math.max(0, i - 3)
     const s = stress(lag)
-    const drift = (i / N) * -22
-    const y = BASE_Y - 60 + drift + s * -38 + Math.sin(i * 0.6) * 3
+    const preDrift = (i / N) * -8
+    const postDrop = i > flagIdx
+      ? Math.min((i - flagIdx) * 2.6, 58) * (1 - 0.35 * Math.max(0, (i - flagIdx - 10) / (N - flagIdx - 10)))
+      : 0
+    const y = BASE_Y - 68 + preDrift + s * -18 + Math.sin(i * 0.6) * 3 + postDrop
     return [PAD_X + i * barW + barW / 2, y]
   })
 
@@ -643,6 +646,7 @@ const StakesChart = () => {
   const flagX = PAD_X + flagIdx * barW + barW / 2
   const PAPER = 'rgb(246,242,234)'
   const PERI = 'rgb(189,200,241)'
+  const ALARM = 'rgb(255,90,80)'
   const HAIR = 'rgba(246,242,234,0.10)'
 
   return (
@@ -654,26 +658,29 @@ const StakesChart = () => {
         <line x1={0} x2={W} y1={BASE_Y} y2={BASE_Y} stroke="rgba(246,242,234,0.22)" strokeWidth={1} strokeDasharray="2 4" />
         {bars.map((amp, i) => {
           const x = PAD_X + i * barW + barW / 2
-          const isPeak = Math.abs(stress(i)) > 0.78
+          const isStress = Math.abs(stress(i)) > 0.78
+          const isNearFlag = Math.abs(i - flagIdx) <= 2
+          const color = isNearFlag ? ALARM : isStress ? PERI : PAPER
+          const opacity = isNearFlag ? 1 : isStress ? 0.95 : 0.72
           return (
-            <g key={i} stroke={isPeak ? PERI : PAPER} strokeWidth={1.4} strokeLinecap="round" opacity={isPeak ? 1 : 0.55}>
+            <g key={i} stroke={color} strokeWidth={isNearFlag ? 2 : 1.4} strokeLinecap="round" opacity={opacity}>
               <line x1={x} x2={x} y1={BASE_Y - amp} y2={BASE_Y + amp} />
             </g>
           )
         })}
-        <polyline fill="none" stroke={PERI} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"
+        <polyline fill="none" stroke={PERI} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
           points={pricePts.map(([x, y]) => `${x},${y}`).join(' ')} />
-        <circle cx={pricePts[pricePts.length - 1][0]} cy={pricePts[pricePts.length - 1][1]} r={4} fill={PERI} />
-        <line x1={flagX} x2={flagX} y1={28} y2={H - 28} stroke={PERI} strokeWidth={1} strokeDasharray="2 3" opacity={0.6} />
-        <circle cx={flagX} cy={H - 28} r={3.5} fill={PERI} />
+        <circle cx={pricePts[pricePts.length - 1][0]} cy={pricePts[pricePts.length - 1][1]} r={5} fill={PERI} />
+        <line x1={flagX} x2={flagX} y1={28} y2={H - 28} stroke={ALARM} strokeWidth={1.5} strokeDasharray="3 3" opacity={0.9} />
+        <circle cx={flagX} cy={H - 28} r={5} fill={ALARM} opacity={0.95} />
       </svg>
-      <div style={{ position: 'absolute', left: `${(flagX / W) * 100}%`, bottom: -2, transform: 'translateX(-50%)', fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: PERI, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', left: `${(flagX / W) * 100}%`, bottom: -2, transform: 'translateX(-50%)', fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: ALARM, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
         Stress · 04:32
       </div>
-      <div style={{ position: 'absolute', left: 0, top: 4, fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.55)' }}>
+      <div style={{ position: 'absolute', left: 0, top: 4, fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.82)' }}>
         Vocal pitch · Earnings call (live)
       </div>
-      <div style={{ position: 'absolute', right: 0, top: 4, fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.55)' }}>
+      <div style={{ position: 'absolute', right: 0, top: 4, fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: ALARM }}>
         $TICKR · −2.4%
       </div>
     </div>
@@ -712,7 +719,7 @@ const Stakes = () => (
           }} />
         ))}
         <StakesChart />
-        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.6)' }}>
+        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', fontFamily: 'var(--vl-font-mono)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.8)' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 18, height: 1, background: 'rgb(246,242,234)', opacity: 0.7, display: 'inline-block' }} />Voice
           </span>
@@ -720,9 +727,9 @@ const Stakes = () => (
             <span style={{ width: 18, height: 2, background: 'rgb(189,200,241)', display: 'inline-block' }} />Share price
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 6, height: 6, borderRadius: 999, background: 'rgb(189,200,241)', display: 'inline-block' }} />Stress event
+            <span style={{ width: 8, height: 8, borderRadius: 999, background: 'rgb(255,90,80)', display: 'inline-block' }} />Stress event
           </span>
-          <span style={{ marginLeft: 'auto', color: 'rgba(246,242,234,0.4)' }}>Illustrative</span>
+          <span style={{ marginLeft: 'auto', color: 'rgba(246,242,234,0.55)' }}>Illustrative</span>
         </div>
       </div>
 
@@ -833,11 +840,10 @@ const HearTheDifference = () => {
 
   return (
     <div style={{ marginTop: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
+      <div style={{ paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
         <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(26px, 2.9vw, 42px)', color: 'var(--vl-ink)' }}>
           Hear the difference — <span style={{ fontStyle: 'normal', color: 'var(--vl-voice-green)' }}>same speaker, same words</span>
         </span>
-        <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>05 · Audio comparison</span>
       </div>
       <figure style={{
         margin: 0,
@@ -873,10 +879,10 @@ const HearTheDifference = () => {
 
         {/* Headlines */}
         <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', gap: 0 }}>
-          <div style={{ padding: 'clamp(24px, 4vw, 36px) clamp(20px, 3vw, 40px) 28px', background: 'var(--vl-ink)' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.45)', marginBottom: 14 }}>Day 01 — Before</div>
+          <div style={{ padding: 'clamp(24px, 4vw, 36px) clamp(20px, 3vw, 40px) 28px', background: '#1c2820' }}>
+            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(246,242,234,0.62)', marginBottom: 14 }}>Day 01 — Before</div>
             <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(24px, 3.0vw, 40px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: 'var(--vl-paper)', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
-            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'rgba(246,242,234,0.55)', margin: '14px 0 0', maxWidth: '36ch' }}>
+            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, lineHeight: 1.55, color: 'rgba(246,242,234,0.72)', margin: '14px 0 0', maxWidth: '36ch' }}>
               Opening line of an investor pitch. Read aloud, day one — clenched, ahead of breath.
             </p>
           </div>
@@ -894,11 +900,11 @@ const HearTheDifference = () => {
           const r = e.currentTarget.getBoundingClientRect()
           setProgress(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)))
         }} style={{
-          position: 'relative', height: 220,
+          position: 'relative', height: 140,
           display: 'grid', gridTemplateColumns: '1fr 1fr',
           cursor: 'pointer',
           borderBottom: '1px solid var(--vl-hairline)',
-          background: 'linear-gradient(to right, var(--vl-ink) 0%, var(--vl-ink) 50%, var(--vl-voice-green-wash) 50%, var(--vl-voice-green-wash) 100%)'
+          background: 'linear-gradient(to right, #1c2820 0%, #1c2820 50%, var(--vl-voice-green-wash) 50%, var(--vl-voice-green-wash) 100%)'
         }}>
           {/* Left: Day 01 */}
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '24px 0 24px 28px', flexDirection: 'row-reverse', gap: 0 }}>
