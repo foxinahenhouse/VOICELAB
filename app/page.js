@@ -435,30 +435,57 @@ const ScenarioCarousel = ({ scenarios }) => {
       <div ref={trackRef} className="vl-scenario-track">
         {scenarios.map((s, i) => (
           <div key={i} className="vl-scenario-card" style={{
-            display: 'flex', flexDirection: 'column', gap: 18,
-            padding: '22px 20px',
+            display: 'flex', flexDirection: 'column',
+            padding: '22px 22px 20px',
             background: 'var(--vl-paper)',
             border: '1px solid var(--vl-hairline)', borderRadius: 6
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
               <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-voice-green)' }}>
                 {String(i + 1).padStart(2, '0')} / {s.tag.toUpperCase()}
               </span>
+              {/* Data-grid icon */}
+              <svg width="34" height="26" viewBox="0 0 34 26" fill="none" aria-hidden style={{ opacity: 0.45, flexShrink: 0 }}>
+                <rect x="2" y="2" width="30" height="16" rx="1.5" stroke="var(--vl-ink)" strokeWidth="1.2" />
+                <line x1="2" y1="10" x2="32" y2="10" stroke="var(--vl-ink)" strokeWidth="1" />
+                <circle cx="10" cy="23" r="1.8" fill="var(--vl-ink)" />
+                <circle cx="17" cy="23" r="1.8" fill="var(--vl-ink)" />
+                <circle cx="24" cy="23" r="1.8" fill="var(--vl-ink)" />
+              </svg>
             </div>
-            <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 17, lineHeight: 1.35, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: 0 }}>
+
+            {/* Setup */}
+            <p style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.4, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: '0 0 20px' }}>
               {s.setup}
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[['You meant', s.meant, 'var(--vl-ink)', false], ['You sounded', s.sounded, 'var(--vl-voice-green)', true]].map(([lbl, val, clr, italic]) => (
-                <div key={lbl} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                  <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)', flex: '0 0 auto', width: 84 }}>{lbl}</span>
-                  <span style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 14, fontWeight: 500, color: clr, fontStyle: italic ? 'italic' : 'normal' }}>{val}</span>
-                </div>
-              ))}
+
+            {/* You meant */}
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)', marginBottom: 5 }}>You meant</div>
+              <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 22, lineHeight: 1.1, color: 'var(--vl-ink)' }}>{s.meant}</div>
             </div>
-            <div style={{ paddingTop: 14, borderTop: '1px solid var(--vl-hairline)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+
+            {/* Diverging line */}
+            <svg viewBox="0 0 400 72" width="100%" height="auto" style={{ display: 'block', margin: '4px 0' }} aria-hidden>
+              <line x1="10" y1="28" x2="248" y2="28"
+                stroke="var(--vl-ink)" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              <line x1="248" y1="28" x2="390" y2="58"
+                stroke="var(--vl-voice-green)" strokeWidth="1.5" strokeDasharray="6 4" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              <circle cx="10" cy="28" r="4" fill="var(--vl-ink)" />
+              <circle cx="390" cy="58" r="4" fill="var(--vl-voice-green)" />
+            </svg>
+
+            {/* They heard */}
+            <div style={{ textAlign: 'right', marginBottom: 20 }}>
+              <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)', marginBottom: 5 }}>They heard</div>
+              <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 22, lineHeight: 1.1, color: 'var(--vl-voice-green)' }}>{s.sounded}</div>
+            </div>
+
+            {/* Cost */}
+            <div style={{ paddingTop: 16, borderTop: '1px solid var(--vl-hairline)', marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>Cost</div>
-              <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--vl-ink)', margin: 0 }}>{s.cost}</p>
+              <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.55, color: 'var(--vl-ink)', margin: 0 }}>{s.cost}</p>
             </div>
           </div>
         ))}
