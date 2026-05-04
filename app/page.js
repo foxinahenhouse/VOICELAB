@@ -896,20 +896,56 @@ const HearTheDifference = () => {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
-  const audioRef = useRef(null)
+  const beforeRef = useRef(null)
+  const afterRef = useRef(null)
+  const beforeDurRef = useRef(0)
+  const afterDurRef = useRef(0)
+
+  const totalDuration = beforeDurRef.current + afterDurRef.current
 
   const handlePlayPause = () => {
-    const audio = audioRef.current
-    if (!audio) return
-    if (playing) { audio.pause(); setPlaying(false) }
-    else { audio.play(); setPlaying(true) }
+    if (playing) {
+      beforeRef.current?.pause()
+      afterRef.current?.pause()
+      setPlaying(false)
+    } else {
+      const cur = progress * totalDuration
+      const bDur = beforeDurRef.current
+      if (cur < bDur) {
+        if (beforeRef.current) { beforeRef.current.currentTime = cur; beforeRef.current.play() }
+      } else {
+        if (afterRef.current) { afterRef.current.currentTime = cur - bDur; afterRef.current.play() }
+      }
+      setPlaying(true)
+    }
   }
 
   const reset = () => {
-    const audio = audioRef.current
-    if (audio) { audio.pause(); audio.currentTime = 0 }
+    beforeRef.current?.pause()
+    afterRef.current?.pause()
+    if (beforeRef.current) beforeRef.current.currentTime = 0
+    if (afterRef.current) afterRef.current.currentTime = 0
     setPlaying(false)
     setProgress(0)
+  }
+
+  const seekTo = (p) => {
+    const total = beforeDurRef.current + afterDurRef.current
+    if (!total) return
+    const cur = p * total
+    const bDur = beforeDurRef.current
+    beforeRef.current?.pause()
+    afterRef.current?.pause()
+    if (cur < bDur) {
+      if (beforeRef.current) beforeRef.current.currentTime = cur
+      if (afterRef.current) afterRef.current.currentTime = 0
+      if (playing) beforeRef.current?.play()
+    } else {
+      if (beforeRef.current) beforeRef.current.currentTime = bDur
+      if (afterRef.current) afterRef.current.currentTime = cur - bDur
+      if (playing) afterRef.current?.play()
+    }
+    setProgress(p)
   }
 
   const N = 56
@@ -927,10 +963,25 @@ const HearTheDifference = () => {
   return (
     <div>
       <audio
-        ref={audioRef}
-        src="/audio/founder-1.mp3"
-        onLoadedMetadata={e => setDuration(e.target.duration)}
-        onTimeUpdate={e => setProgress(e.target.currentTime / (e.target.duration || 1))}
+        ref={beforeRef}
+        src="/audio/before-sample.mp3"
+        onLoadedMetadata={e => { beforeDurRef.current = e.target.duration; setDuration(beforeDurRef.current + afterDurRef.current) }}
+        onTimeUpdate={e => {
+          const total = beforeDurRef.current + afterDurRef.current
+          if (total) setProgress(e.target.currentTime / total)
+        }}
+        onEnded={() => {
+          if (afterRef.current) { afterRef.current.currentTime = 0; afterRef.current.play() }
+        }}
+      />
+      <audio
+        ref={afterRef}
+        src="/audio/after.mp3"
+        onLoadedMetadata={e => { afterDurRef.current = e.target.duration; setDuration(beforeDurRef.current + afterDurRef.current) }}
+        onTimeUpdate={e => {
+          const total = beforeDurRef.current + afterDurRef.current
+          if (total) setProgress((beforeDurRef.current + e.target.currentTime) / total)
+        }}
         onEnded={() => { setPlaying(false); setProgress(0) }}
       />
       <div style={{ paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
@@ -992,8 +1043,7 @@ const HearTheDifference = () => {
         <div onClick={(e) => {
           const r = e.currentTarget.getBoundingClientRect()
           const p = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))
-          setProgress(p)
-          if (audioRef.current) audioRef.current.currentTime = p * duration
+          seekTo(p)
         }} style={{
           position: 'relative', height: 140,
           display: 'grid', gridTemplateColumns: '1fr 1fr',
