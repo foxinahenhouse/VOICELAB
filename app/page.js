@@ -161,6 +161,13 @@ const Typewriter = ({ words, color = 'var(--vl-voice-green)' }) => {
 // ---------- LIVE VOICEPRINT ----------
 
 const LiveVoiceprint = ({ bars = 64, flatStart = 36, flatEnd = 44 }) => {
+  const [playing, setPlaying] = useState(false)
+  const audioRef = useRef(null)
+  const analyserRef = useRef(null)
+  const audioCtxRef = useRef(null)
+  const rectRefs = useRef([])
+  const rafRef = useRef(null)
+
   const cfg = useMemo(() => {
     const arr = []
     for (let i = 0; i < bars; i++) {
@@ -177,8 +184,75 @@ const LiveVoiceprint = ({ bars = 64, flatStart = 36, flatEnd = 44 }) => {
   const W = 600, H = 280, PAD_X = 4, barGap = 3
   const barW = (W - PAD_X * 2 - barGap * (bars - 1)) / bars
 
+  const restoreBars = () => {
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null }
+    rectRefs.current.forEach((rect, i) => {
+      if (!rect || !cfg[i]) return
+      const fullH = cfg[i].base * (H - 24)
+      rect.setAttribute('y', (H - fullH) / 2)
+      rect.setAttribute('height', fullH)
+      rect.style.transform = ''
+    })
+  }
+
+  const runVisualizer = () => {
+    const analyser = analyserRef.current
+    if (!analyser) return
+    const dataArray = new Uint8Array(analyser.frequencyBinCount)
+    const draw = () => {
+      rafRef.current = requestAnimationFrame(draw)
+      analyser.getByteFrequencyData(dataArray)
+      rectRefs.current.forEach((rect, i) => {
+        if (!rect) return
+        const bin = Math.floor((i / bars) * dataArray.length * 0.72)
+        const value = dataArray[bin] / 255
+        const fullH = Math.max(0.05, value) * (H - 24)
+        rect.setAttribute('y', (H - fullH) / 2)
+        rect.setAttribute('height', fullH)
+        rect.style.transform = 'none'
+      })
+    }
+    draw()
+  }
+
+  const togglePlay = async () => {
+    if (!audioRef.current) return
+    if (!audioCtxRef.current) {
+      const ctx = new AudioContext()
+      audioCtxRef.current = ctx
+      const analyser = ctx.createAnalyser()
+      analyser.fftSize = 512
+      analyser.smoothingTimeConstant = 0.75
+      analyserRef.current = analyser
+      const source = ctx.createMediaElementSource(audioRef.current)
+      source.connect(analyser)
+      analyser.connect(ctx.destination)
+    }
+    if (playing) {
+      audioRef.current.pause()
+      restoreBars()
+      setPlaying(false)
+    } else {
+      await audioCtxRef.current.resume()
+      audioRef.current.play()
+      runVisualizer()
+      setPlaying(true)
+    }
+  }
+
+  useEffect(() => {
+    const audio = audioRef.current
+    const onEnded = () => { restoreBars(); setPlaying(false) }
+    audio?.addEventListener('ended', onEnded)
+    return () => {
+      audio?.removeEventListener('ended', onEnded)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [])
+
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: `${W} / ${H}` }}>
+      <audio ref={audioRef} src="/audio/founder-1.mp3" preload="metadata" />
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" width="100%" height="100%" style={{ display: 'block' }} aria-hidden>
         <line x1={0} x2={W} y1={H / 2} y2={H / 2} stroke="rgba(31,37,32,0.10)" strokeWidth={1} />
         {cfg.map((c, i) => {
@@ -187,15 +261,16 @@ const LiveVoiceprint = ({ bars = 64, flatStart = 36, flatEnd = 44 }) => {
           const fullH = c.base * (H - 24)
           const y = (H - fullH) / 2
           return (
-            <rect key={i} x={x} y={y} width={barW} height={fullH}
+            <rect key={i} ref={el => rectRefs.current[i] = el}
+              x={x} y={y} width={barW} height={fullH}
               rx={Math.min(barW / 2, 1.5)}
               fill={isFlat ? 'var(--vl-voice-green)' : 'var(--vl-ink)'}
               opacity={isFlat ? 1 : 0.86}
               style={{
                 transformBox: 'fill-box', transformOrigin: 'center',
-                animation: isFlat
+                animation: playing ? 'none' : (isFlat
                   ? `vl-bar-flat 2.4s ease-in-out ${c.delay}s infinite`
-                  : `vl-bar-pulse ${c.dur}s ease-in-out ${c.delay}s infinite`
+                  : `vl-bar-pulse ${c.dur}s ease-in-out ${c.delay}s infinite`)
               }} />
           )
         })}
@@ -211,6 +286,19 @@ const LiveVoiceprint = ({ bars = 64, flatStart = 36, flatEnd = 44 }) => {
         animation: 'vl-scan 7s linear infinite',
         pointerEvents: 'none'
       }} />
+      <button onClick={togglePlay} aria-label={playing ? 'Pause' : 'Play audio sample'}
+        style={{
+          position: 'absolute', bottom: 6, right: 0,
+          width: 26, height: 26, borderRadius: '50%',
+          border: '1px solid rgba(31,37,32,0.18)',
+          background: 'rgba(246,242,234,0.88)',
+          backdropFilter: 'blur(4px)',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--vl-ink)', fontSize: 9, padding: 0, lineHeight: 1,
+          flexShrink: 0,
+        }}>
+        {playing ? '⏸' : '▶'}
+      </button>
     </div>
   )
 }
@@ -807,24 +895,22 @@ const formatTime = (s) => {
 const HearTheDifference = () => {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
-  const rafRef = useRef(0)
-  const startRef = useRef(0)
-  const durMs = 18000
+  const [duration, setDuration] = useState(0)
+  const audioRef = useRef(null)
 
-  useEffect(() => {
-    if (!playing) return
-    startRef.current = performance.now() - progress * durMs
-    const tick = (t) => {
-      const p = Math.min(1, (t - startRef.current) / durMs)
-      setProgress(p)
-      if (p < 1) rafRef.current = requestAnimationFrame(tick)
-      else setPlaying(false)
-    }
-    rafRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [playing])
+  const handlePlayPause = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (playing) { audio.pause(); setPlaying(false) }
+    else { audio.play(); setPlaying(true) }
+  }
 
-  const reset = () => { setPlaying(false); setProgress(0) }
+  const reset = () => {
+    const audio = audioRef.current
+    if (audio) { audio.pause(); audio.currentTime = 0 }
+    setPlaying(false)
+    setProgress(0)
+  }
 
   const N = 56
   const beforeBars = useMemo(() => {
@@ -839,7 +925,14 @@ const HearTheDifference = () => {
   const ticks = [1, 3, 5, 7, 10]
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div>
+      <audio
+        ref={audioRef}
+        src="/audio/founder-1.mp3"
+        onLoadedMetadata={e => setDuration(e.target.duration)}
+        onTimeUpdate={e => setProgress(e.target.currentTime / (e.target.duration || 1))}
+        onEnded={() => { setPlaying(false); setProgress(0) }}
+      />
       <div style={{ paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
         <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(26px, 2.9vw, 42px)', color: 'var(--vl-ink)' }}>
           Hear the difference — <span style={{ fontStyle: 'normal', color: 'var(--vl-voice-green)' }}>same speaker, same words</span>
@@ -854,10 +947,10 @@ const HearTheDifference = () => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 16, padding: '12px clamp(16px, 3vw, 28px)', borderBottom: '1px solid var(--vl-hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
             <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-graphite)', letterSpacing: '0.04em' }}>
-              {formatTime(progress * (durMs / 1000))}<span style={{ opacity: 0.5 }}> / {formatTime(durMs / 1000)}</span>
+              {formatTime(progress * duration)}<span style={{ opacity: 0.5 }}> / {formatTime(duration)}</span>
             </span>
           </div>
-          <button aria-label={playing ? 'Pause' : 'Play comparison'} onClick={() => setPlaying(p => !p)} style={{
+          <button aria-label={playing ? 'Pause' : 'Play comparison'} onClick={handlePlayPause} style={{
             width: 44, height: 44, borderRadius: 999,
             border: '1px solid var(--vl-voice-green)',
             background: playing ? 'var(--vl-voice-green)' : 'transparent',
@@ -878,17 +971,17 @@ const HearTheDifference = () => {
         </div>
 
         {/* Headlines */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-eq)', gap: 0, background: 'linear-gradient(to right, #dce4ff 0%, #001a99 100%)' }}>
-          <div style={{ padding: '20px clamp(16px, 3vw, 28px)' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#0a1466', marginBottom: 10 }}>Day 01 — Before</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(20px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#050d3a', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, background: 'linear-gradient(to right, #dce4ff 0%, #001a99 100%)' }}>
+          <div style={{ padding: 'clamp(14px, 2.5vw, 20px) clamp(16px, 3vw, 28px)' }}>
+            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#0a1466', marginBottom: 8 }}>Day 01 — Before</div>
+            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(16px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#050d3a', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
             <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: '#1a2f80', margin: '10px 0 0', maxWidth: '36ch' }}>
               Opening line of an investor pitch. Read aloud, day one — clenched, ahead of breath.
             </p>
           </div>
-          <div style={{ padding: '20px clamp(16px, 3vw, 28px)', textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(220,228,255,0.9)', marginBottom: 10 }}>Day 10 — After</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(20px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#ffffff', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
+          <div style={{ padding: 'clamp(14px, 2.5vw, 20px) clamp(16px, 3vw, 28px)', textAlign: 'right' }}>
+            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(220,228,255,0.9)', marginBottom: 8 }}>Day 10 — After</div>
+            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(16px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#ffffff', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
             <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: 'rgba(220,228,255,0.88)', margin: '10px 0 0 auto', maxWidth: '36ch' }}>
               The person is the same. <span style={{ fontWeight: 500, color: '#ffffff' }}>How it lands isn't.</span>
             </p>
@@ -898,7 +991,9 @@ const HearTheDifference = () => {
         {/* Wave bars */}
         <div onClick={(e) => {
           const r = e.currentTarget.getBoundingClientRect()
-          setProgress(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)))
+          const p = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))
+          setProgress(p)
+          if (audioRef.current) audioRef.current.currentTime = p * duration
         }} style={{
           position: 'relative', height: 140,
           display: 'grid', gridTemplateColumns: '1fr 1fr',
@@ -962,7 +1057,7 @@ const Sprint = () => {
   ]
 
   return (
-    <section id="sprint" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
+    <section id="sprint" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop) var(--vl-section-y-tight)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
         <Label style={{ marginBottom: 32 }}>Where it starts</Label>
         <div style={{ display: 'grid', gridTemplateColumns: 'var(--vl-cols-12)', gap: 'var(--vl-gap-96)', alignItems: 'start' }}>
@@ -1012,7 +1107,7 @@ const Sprint = () => {
           </div>
         </div>
 
-        <HearTheDifference />
+        <div style={{ marginTop: 'var(--vl-gap-96)' }}><HearTheDifference /></div>
       </div>
     </section>
   )
@@ -1027,7 +1122,7 @@ const Testimonials = () => {
   ]
 
   return (
-    <section id="testimonials" style={{ padding: 'var(--vl-section-y) var(--vl-margin-x-desktop)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
+    <section id="testimonials" style={{ padding: 'var(--vl-section-y-tight) var(--vl-margin-x-desktop) var(--vl-section-y)', background: 'var(--vl-bone)', borderTop: '1px solid var(--vl-hairline)', borderBottom: '1px solid var(--vl-hairline)' }}>
       <div style={{ maxWidth: 'var(--vl-content-max)', margin: '0 auto' }}>
         <div style={{ marginBottom: 'var(--vl-gap-64)' }}>
           <Label style={{ marginBottom: 32 }}>What clients say</Label>
