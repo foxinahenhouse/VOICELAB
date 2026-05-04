@@ -892,209 +892,113 @@ const formatTime = (s) => {
   return `${m}:${ss}`
 }
 
-const HearTheDifference = () => {
+const AudioPanel = ({ src, label, day, heading, headingItalic, subtext, dark }) => {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
-  const beforeRef = useRef(null)
-  const afterRef = useRef(null)
-  const beforeDurRef = useRef(0)
-  const afterDurRef = useRef(0)
+  const audioRef = useRef(null)
 
-  const totalDuration = beforeDurRef.current + afterDurRef.current
+  const N = 48
+  const bars = useMemo(() => {
+    const seed = dark ? 7 : 31
+    const r = (i) => { const x = Math.sin(i * seed * 0.37) * 10000; return x - Math.floor(x) }
+    return dark
+      ? Array.from({ length: N }, (_, i) => 0.18 + ((Math.sin(i * 0.16) + 1) / 2) * 0.55 + ((Math.sin(i * 0.06) + 1) / 2) * 0.20 + r(i) * 0.05)
+      : Array.from({ length: N }, (_, i) => Math.min(0.92, 0.40 + r(i) * 0.28 + Math.abs(Math.sin(i * 0.55)) * 0.18))
+  }, [dark])
 
-  const handlePlayPause = () => {
-    if (playing) {
-      beforeRef.current?.pause()
-      afterRef.current?.pause()
-      setPlaying(false)
-    } else {
-      const cur = progress * totalDuration
-      const bDur = beforeDurRef.current
-      if (cur < bDur) {
-        if (beforeRef.current) { beforeRef.current.currentTime = cur; beforeRef.current.play() }
-      } else {
-        if (afterRef.current) { afterRef.current.currentTime = cur - bDur; afterRef.current.play() }
-      }
-      setPlaying(true)
-    }
+  const toggle = () => {
+    if (!audioRef.current) return
+    if (playing) { audioRef.current.pause(); setPlaying(false) }
+    else { audioRef.current.play(); setPlaying(true) }
   }
 
-  const reset = () => {
-    beforeRef.current?.pause()
-    afterRef.current?.pause()
-    if (beforeRef.current) beforeRef.current.currentTime = 0
-    if (afterRef.current) afterRef.current.currentTime = 0
-    setPlaying(false)
-    setProgress(0)
-  }
-
-  const seekTo = (p) => {
-    const total = beforeDurRef.current + afterDurRef.current
-    if (!total) return
-    const cur = p * total
-    const bDur = beforeDurRef.current
-    beforeRef.current?.pause()
-    afterRef.current?.pause()
-    if (cur < bDur) {
-      if (beforeRef.current) beforeRef.current.currentTime = cur
-      if (afterRef.current) afterRef.current.currentTime = 0
-      if (playing) beforeRef.current?.play()
-    } else {
-      if (beforeRef.current) beforeRef.current.currentTime = bDur
-      if (afterRef.current) afterRef.current.currentTime = cur - bDur
-      if (playing) afterRef.current?.play()
-    }
-    setProgress(p)
-  }
-
-  const N = 56
-  const beforeBars = useMemo(() => {
-    const r = (i) => { const x = Math.sin(i * 31 * 0.37) * 10000; return x - Math.floor(x) }
-    return Array.from({ length: N }, (_, i) => Math.min(0.92, 0.40 + r(i) * 0.28 + Math.abs(Math.sin(i * 0.55)) * 0.18))
-  }, [])
-  const afterBars = useMemo(() => {
-    const r = (i) => { const x = Math.sin(i * 7 * 0.37) * 10000; return x - Math.floor(x) }
-    return Array.from({ length: N }, (_, i) => 0.18 + ((Math.sin(i * 0.16) + 1) / 2) * 0.55 + ((Math.sin(i * 0.06) + 1) / 2) * 0.20 + r(i) * 0.05)
-  }, [])
-
-  const ticks = [1, 3, 5, 7, 10]
+  const bg = dark ? '#001a99' : '#dce4ff'
+  const barPlayed = dark ? 'rgba(220,228,255,0.95)' : 'rgba(0,26,153,0.85)'
+  const barUnplayed = dark ? 'rgba(220,228,255,0.28)' : 'rgba(0,26,153,0.22)'
+  const labelColor = dark ? 'rgba(220,228,255,0.7)' : '#0a1466'
+  const headingColor = dark ? '#ffffff' : '#050d3a'
+  const subtextColor = dark ? 'rgba(220,228,255,0.8)' : '#1a2f80'
+  const btnBorder = dark ? 'rgba(220,228,255,0.6)' : 'rgba(0,26,153,0.5)'
+  const btnColor = dark ? '#dce4ff' : '#001a99'
+  const btnActiveBg = dark ? 'rgba(220,228,255,0.18)' : 'rgba(0,26,153,0.1)'
+  const timeColor = dark ? 'rgba(220,228,255,0.5)' : 'rgba(0,26,153,0.45)'
 
   return (
-    <div>
+    <div style={{ background: bg, borderRadius: 6, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <audio
-        ref={beforeRef}
-        src="/audio/before.mp3"
-        onLoadedMetadata={e => { beforeDurRef.current = e.target.duration; setDuration(beforeDurRef.current + afterDurRef.current) }}
-        onTimeUpdate={e => {
-          const total = beforeDurRef.current + afterDurRef.current
-          if (total) setProgress(e.target.currentTime / total)
-        }}
-        onEnded={() => {
-          if (afterRef.current) { afterRef.current.currentTime = 0; afterRef.current.play() }
-        }}
+        ref={audioRef}
+        src={src}
+        onLoadedMetadata={e => setDuration(e.target.duration)}
+        onTimeUpdate={e => setProgress(duration ? e.target.currentTime / duration : 0)}
+        onEnded={() => { setPlaying(false); setProgress(0); if (audioRef.current) audioRef.current.currentTime = 0 }}
       />
-      <audio
-        ref={afterRef}
-        src="/audio/after.mp3"
-        onLoadedMetadata={e => { afterDurRef.current = e.target.duration; setDuration(beforeDurRef.current + afterDurRef.current) }}
-        onTimeUpdate={e => {
-          const total = beforeDurRef.current + afterDurRef.current
-          if (total) setProgress((beforeDurRef.current + e.target.currentTime) / total)
-        }}
-        onEnded={() => { setPlaying(false); setProgress(0) }}
-      />
-      <div style={{ paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
-        <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(26px, 2.9vw, 42px)', color: 'var(--vl-ink)' }}>
-          Hear the difference — <span style={{ fontStyle: 'normal', color: 'var(--vl-voice-green)' }}>same speaker, same words</span>
-        </span>
+
+      {/* Header */}
+      <div style={{ padding: 'clamp(16px, 2.5vw, 24px) clamp(16px, 3vw, 28px) 0' }}>
+        <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: labelColor, marginBottom: 10 }}>{label}</div>
+        <div style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(22px, 2.4vw, 34px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: headingColor }}>
+          {heading}{headingItalic && <em style={{ fontStyle: 'italic' }}>{headingItalic}</em>}
+        </div>
+        <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: subtextColor, margin: '10px 0 0', maxWidth: '34ch' }}>{subtext}</p>
       </div>
-      <figure style={{
-        margin: 0,
-        background: 'var(--vl-paper)', border: '1px solid var(--vl-hairline)',
-        borderRadius: 6, overflow: 'hidden', position: 'relative'
-      }}>
-        {/* Top bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 16, padding: '12px clamp(16px, 3vw, 28px)', borderBottom: '1px solid var(--vl-hairline)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
-            <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: 'var(--vl-graphite)', letterSpacing: '0.04em' }}>
-              {formatTime(progress * duration)}<span style={{ opacity: 0.5 }}> / {formatTime(duration)}</span>
-            </span>
-          </div>
-          <button aria-label={playing ? 'Pause' : 'Play comparison'} onClick={handlePlayPause} style={{
-            width: 44, height: 44, borderRadius: 999,
-            border: '1px solid var(--vl-voice-green)',
-            background: playing ? 'var(--vl-voice-green)' : 'transparent',
-            color: playing ? 'var(--vl-paper)' : 'var(--vl-voice-green)',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'background 180ms var(--vl-ease), color 180ms var(--vl-ease)'
-          }}>
-            {playing
-              ? <svg width="16" height="16" viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="1" width="3.4" height="12" /><rect x="8.6" y="1" width="3.4" height="12" /></svg>
-              : <svg width="16" height="16" viewBox="0 0 14 14" fill="currentColor"><path d="M2 1 L13 7 L2 13 Z" /></svg>
-            }
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18, justifyContent: 'flex-end', minWidth: 0 }}>
-            <button onClick={reset} style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
-              Restart
-            </button>
-          </div>
-        </div>
 
-        {/* Headlines */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, background: 'linear-gradient(to right, #dce4ff 0%, #001a99 100%)' }}>
-          <div style={{ padding: 'clamp(14px, 2.5vw, 20px) clamp(16px, 3vw, 28px)' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#0a1466', marginBottom: 8 }}>Day 01 — Before</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontSize: 'clamp(16px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#050d3a', margin: 0, maxWidth: '18ch', textWrap: 'balance' }}>Same speaker. Same words.</h3>
-            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: '#1a2f80', margin: '10px 0 0', maxWidth: '36ch' }}>
-              Opening line of an investor pitch. Read aloud, day one — clenched, ahead of breath.
-            </p>
-          </div>
-          <div style={{ padding: 'clamp(14px, 2.5vw, 20px) clamp(16px, 3vw, 28px)', textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(220,228,255,0.9)', marginBottom: 8 }}>Day 10 — After</div>
-            <h3 style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(16px, 2.4vw, 32px)', lineHeight: 1.05, letterSpacing: '-0.012em', color: '#ffffff', margin: '0 0 0 auto', maxWidth: '18ch', textWrap: 'balance' }}>Different delivery.</h3>
-            <p style={{ fontFamily: 'var(--vl-font-sans)', fontSize: 13, lineHeight: 1.5, color: 'rgba(220,228,255,0.88)', margin: '10px 0 0 auto', maxWidth: '36ch' }}>
-              The person is the same. <span style={{ fontWeight: 500, color: '#ffffff' }}>How it lands isn't.</span>
-            </p>
-          </div>
-        </div>
+      {/* Waveform */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '20px clamp(16px, 3vw, 28px)', gap: 2, minHeight: 80 }}>
+        {bars.map((h, i) => (
+          <span key={i} style={{ flex: '1 1 0', minWidth: 0, height: `${Math.max(8, h * 85)}%`, background: (i / N) <= progress ? barPlayed : barUnplayed, borderRadius: 1, transition: 'background 80ms' }} />
+        ))}
+      </div>
 
-        {/* Wave bars */}
-        <div onClick={(e) => {
-          const r = e.currentTarget.getBoundingClientRect()
-          const p = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))
-          seekTo(p)
-        }} style={{
-          position: 'relative', height: 140,
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
-          cursor: 'pointer',
-          borderBottom: '1px solid var(--vl-hairline)',
-          background: 'linear-gradient(to right, #dce4ff 0%, #001a99 100%)'
-        }}>
-          {/* Left: Day 01 */}
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '24px 0 24px 28px', flexDirection: 'row-reverse', gap: 0 }}>
-            {beforeBars.map((h, i) => {
-              const playedFrac = progress * 2
-              const played = (i / N) <= playedFrac && progress < 0.501
-              return <span key={`b-${i}`} style={{ flex: '1 1 0', minWidth: 0, marginLeft: i === N - 1 ? 0 : 2, height: `${Math.max(6, h * 70)}%`, background: played ? 'rgba(0,26,153,0.9)' : 'rgba(0,26,153,0.25)', borderRadius: 1 }} />
-            })}
-          </div>
-          {/* Right: Day 10 */}
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '24px 28px 24px 0', gap: 0 }}>
-            {afterBars.map((h, i) => {
-              const playedFrac = (progress - 0.5) * 2
-              const played = progress >= 0.5 && (i / N) <= playedFrac
-              return <span key={`a-${i}`} style={{ flex: '1 1 0', minWidth: 0, marginRight: i === N - 1 ? 0 : 2, height: `${Math.max(8, h * 90)}%`, background: played ? 'rgba(220,228,255,0.95)' : 'rgba(220,228,255,0.3)', borderRadius: 1 }} />
-            })}
-          </div>
-          <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, background: 'rgba(246,242,234,0.22)' }} />
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--vl-paper)', border: '1px solid var(--vl-ink)', padding: '6px 10px', borderRadius: 999, fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-ink)', whiteSpace: 'nowrap' }}>
-            10 days
-          </div>
-          <div aria-hidden style={{ position: 'absolute', top: 8, bottom: 8, left: `${progress * 100}%`, width: 2, background: 'var(--vl-paper)', transform: 'translateX(-1px)', boxShadow: '0 0 0 4px rgba(246,242,234,0.15)', pointerEvents: 'none', opacity: progress > 0 ? 1 : 0, transition: 'opacity 200ms var(--vl-ease)' }} />
-        </div>
-
-        {/* Ticks */}
-        <div style={{ position: 'relative', padding: '14px 28px 18px', display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>
-          {ticks.map((d) => (
-            <span key={d} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 1, height: 6, background: 'var(--vl-hairline)', display: 'inline-block' }} />
-              Day {String(d).padStart(2, '0')}
-            </span>
-          ))}
-        </div>
-
-        {/* Caption */}
-        <div style={{ padding: '18px 28px 24px', borderTop: '1px solid var(--vl-hairline)', display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', gap: 24 }}>
-          <p style={{ fontFamily: 'var(--vl-font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(20px, 1.9vw, 26px)', lineHeight: 1.25, letterSpacing: '-0.005em', color: 'var(--vl-ink)', margin: 0, maxWidth: '52ch' }}>
-            Reading the words <span style={{ color: 'var(--vl-graphite)' }}>→</span> <span style={{ color: 'var(--vl-voice-green)' }}>landing the words.</span>
-          </p>
-          <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--vl-graphite)' }}>↳ click anywhere to scrub</span>
-        </div>
-      </figure>
+      {/* Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 clamp(16px, 3vw, 28px) clamp(16px, 2.5vw, 22px)' }}>
+        <button
+          aria-label={playing ? 'Pause' : `Play ${label}`}
+          onClick={toggle}
+          style={{ width: 40, height: 40, borderRadius: 999, border: `1px solid ${btnBorder}`, background: playing ? btnActiveBg : 'transparent', color: btnColor, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 150ms' }}
+        >
+          {playing
+            ? <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="1" width="3.2" height="12" /><rect x="8.8" y="1" width="3.2" height="12" /></svg>
+            : <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M2 1 L13 7 L2 13 Z" /></svg>
+          }
+        </button>
+        <span style={{ fontFamily: 'var(--vl-font-mono)', fontFeatureSettings: "'tnum' 1", fontSize: 11, color: timeColor, letterSpacing: '0.04em' }}>
+          {formatTime(progress * duration)}<span style={{ opacity: 0.6 }}> / {formatTime(duration)}</span>
+        </span>
+        <span style={{ fontFamily: 'var(--vl-font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: labelColor, marginLeft: 'auto' }}>{day}</span>
+      </div>
     </div>
   )
 }
+
+const HearTheDifference = () => (
+  <div>
+    <div style={{ paddingBottom: 18, borderBottom: '1px solid var(--vl-hairline)', marginBottom: 20 }}>
+      <span style={{ fontFamily: 'var(--vl-font-serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(26px, 2.9vw, 42px)', color: 'var(--vl-ink)' }}>
+        Hear the difference — <span style={{ fontStyle: 'normal', color: 'var(--vl-voice-green)' }}>same speaker, same words</span>
+      </span>
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <AudioPanel
+        src="/audio/before.mp3"
+        label="Day 01 — Before"
+        day="Day 01"
+        heading="Same speaker. Same words."
+        subtext="Opening line of an investor pitch. Read aloud, day one — clenched, ahead of breath."
+        dark={false}
+      />
+      <AudioPanel
+        src="/audio/bafter.mp3"
+        label="Day 03 — After"
+        day="Day 03"
+        heading="Different "
+        headingItalic="delivery."
+        subtext="The person is the same. How it lands isn't."
+        dark={true}
+      />
+    </div>
+  </div>
+)
 
 // ---------- SPRINT ----------
 
