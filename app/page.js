@@ -964,7 +964,7 @@ const HearTheDifference = () => {
     <div>
       <audio
         ref={beforeRef}
-        src="/audio/before-sample.mp3"
+        src="/audio/before.mp3"
         onLoadedMetadata={e => { beforeDurRef.current = e.target.duration; setDuration(beforeDurRef.current + afterDurRef.current) }}
         onTimeUpdate={e => {
           const total = beforeDurRef.current + afterDurRef.current
